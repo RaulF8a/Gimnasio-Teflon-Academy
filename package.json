@@ -1,0 +1,16 @@
+{
+  "name": "proyecto-final",
+  "version": "1.0.0",
+  "description": "Sistema para Gimnasio Teflon Academy",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Equipo 6",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20"
+  }
+}
