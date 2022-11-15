@@ -1,11 +1,9 @@
 body{
-    background-image: radial-gradient(circle at 77.28% 2.75%, #ff887e 0, #ff7e85 7.14%, #ff748d 14.29%, #ff6994 21.43%, #ff5d9c 28.57%, #ff52a4 35.71%, #ff47ad 42.86%, #f23cb5 50%, #e235be 57.14%, #cf32c8 64.29%, #b935d1 71.43%, #9f3bdb 78.57%, #7f42e5 85.71%, #534aed 92.86%, #0051f5 100%);
-    min-height: 100vh; 
+    background-image: radial-gradient(circle at -19.64% 62.28%, #9fdae0 0, #a0dae4 4.55%, #a1d9e8 9.09%, #a3d8ec 13.64%, #a7d7ef 18.18%, #abd6f1 22.73%, #afd5f3 27.27%, #b5d3f4 31.82%, #bbd2f4 36.36%, #c1d0f4 40.91%, #c7cff3 45.45%, #cdcdf2 50%, #d3cbf0 54.55%, #d9caed 59.09%, #dfc8ea 63.64%, #e4c7e7 68.18%, #e8c6e3 72.73%, #ecc5de 77.27%, #f0c4da 81.82%, #f3c4d5 86.36%, #f5c3d0 90.91%, #f6c3cb 95.45%, #f7c3c6 100%);    min-height: 100vh; 
     margin: 0; 
     display: grid;
     grid-template-rows: auto 1fr auto;
 }
-
 
 .navbar{
     height: 64px;
@@ -50,8 +48,11 @@ body{
 }
 
 .img {
-    background-image: url("images/login.png"), url("images/login2.png");
+    background-image: url("images/login.png"), url("images/login2.png"), url("images/login3.png");
     background-repeat: no-repeat;
-    background-position: 1300px 140px, 750px 600px;;
-    background-size: 300px, 200px;
+    background-position: 1300px 140px, 750px 600px, 900px 300px;
+    background-size: 300px, 200px, 300px;
 }
+
+
+
