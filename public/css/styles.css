@@ -1,12 +1,11 @@
 body{
-    background-color: whitesmoke;
-
+    background-image: radial-gradient(circle at 77.28% 2.75%, #ff887e 0, #ff7e85 7.14%, #ff748d 14.29%, #ff6994 21.43%, #ff5d9c 28.57%, #ff52a4 35.71%, #ff47ad 42.86%, #f23cb5 50%, #e235be 57.14%, #cf32c8 64.29%, #b935d1 71.43%, #9f3bdb 78.57%, #7f42e5 85.71%, #534aed 92.86%, #0051f5 100%);
     min-height: 100vh; 
     margin: 0; 
-
     display: grid;
     grid-template-rows: auto 1fr auto;
 }
+
 
 .navbar{
     height: 64px;
@@ -48,4 +47,11 @@ body{
 	margin-top: 25px;
 	font-size: 12px;
     color: #fff;
+}
+
+.img {
+    background-image: url("images/login.png"), url("images/login2.png");
+    background-repeat: no-repeat;
+    background-position: 1300px 140px, 750px 600px;;
+    background-size: 300px, 200px;
 }
