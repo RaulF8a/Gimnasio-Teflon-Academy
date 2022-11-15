@@ -2,9 +2,16 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import ejs from 'ejs';
+import mysql from 'mysql'
 
 const app = express ();
 const __dirname = path.resolve ();
+let conexion = mysql.createConnection ({
+    host: "",
+    user: "",
+    password: "",
+    database: ""
+})
 
 app.use (bodyParser.urlencoded ({extended: true}));
 app.use (express.static ("public"));
