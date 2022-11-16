@@ -30,7 +30,7 @@ body{
 }
 
 .footer-padding {
-	padding-bottom: 60px;
+	padding-bottom: 30px;
 }
 
 .footer {
@@ -53,5 +53,8 @@ body{
     background-size: 300px, 200px, 300px;
 }
 
-
+/* Login */
+.entradaLogin{
+    padding-bottom: 50px;
+}
 
