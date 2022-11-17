@@ -7,6 +7,7 @@ body{
     /* grid-template-rows: auto 1fr auto; */
 }
 
+/* Navbar */
 .navbar{
     padding-top: 15px;
     padding-bottom: 15px;
@@ -29,6 +30,7 @@ body{
     padding-bottom: 70px;
 }
 
+/* Pie de Pagina */
 .footer-padding {
 	padding-bottom: 30px;
 }
@@ -46,6 +48,7 @@ body{
     color: #fff;
 }
 
+/* Imagenes */
 .img {
     background-image: url("images/login.png"), url("images/login2.png"), url("images/login3.png");
     background-repeat: no-repeat;
@@ -54,7 +57,44 @@ body{
 }
 
 /* Login */
-.entradaLogin{
+.entradaLogin {
     padding-bottom: 50px;
 }
 
+/* Contenedor principal */
+.container {
+    align-items: center;
+}
+
+/* Eliminar Atleta */
+.eliminarFormTitulo {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.elimnarFormInput {
+    text-align: center;
+    padding-top: 50px;
+}
+
+/* Contraseña */
+.contraseniaFormTitulo {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.contraseniaFormInput{
+    text-align: center;
+    padding-top: 25px; 
+}
+
+/* Registrar Empleado */
+.registrarEmpleadoFormTitulo {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.registrarEmpleadoFormInput {
+    text-align: center;
+    padding-top: 25px; 
+}

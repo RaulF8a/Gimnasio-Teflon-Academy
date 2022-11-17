@@ -2,10 +2,14 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import ejs from 'ejs';
-import mysql from 'mysql'
+import mysql from 'mysql';
+import passport from 'passport';
+import session from 'express-session';
 
 const app = express ();
 const __dirname = path.resolve ();
+
+// Conexion a la base de datos.
 let conexion = mysql.createConnection ({
     host: "",
     user: "",
@@ -13,9 +17,21 @@ let conexion = mysql.createConnection ({
     database: ""
 });
 
+// Configuraciones de aplicacion.
 app.use (bodyParser.urlencoded ({extended: true}));
 app.use (express.static ("public"));
 app.set ("view engine", "ejs");
+
+// Para incializar Passport.
+// app.use (session ({
+//     secret: process.env.SECRET,
+//     resave: false,
+//     saveUninitialized: false
+// }));
+// app.use (passport.initialize ());
+// app.use (passport.session ());
+
+let mensajeError = ""
 
 // Ruta Home
 app.get ("/", (req, res) => {
@@ -123,10 +139,37 @@ app.get ("/resumen", (req, res) => {
 
 // Ruta agregarEmpleado
 app.get ("/registrarEmpleado", (req, res) => {
-    res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: "", login: false, sesion: true});
+    res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: "", login: false, sesion: true, mensajeError: mensajeError});
 })
 .post ("/registrarEmpleado", (req, res) => {
-    //
+    let fechaNacimiento = new Date (req.body.fechaNacimiento);
+    let fechaActual = new Date ();
+    let fechaValida = true;
+    mensajeError = "";
+    
+    // Un menor de 15 años no puede trabajar.
+    if (fechaNacimiento.getFullYear () > fechaActual.getFullYear () - 15){
+        // console.log ("Fecha no valida.");
+        fechaValida = false;
+    }
+
+    if (fechaNacimiento.getFullYear () === fechaActual.getFullYear () - 15){
+        if (fechaNacimiento.getMonth () < fechaActual.getMonth ()){
+            // console.log ("Fecha no valida porque no ha llegado el mes.");
+            fechaValida = false;
+        }
+        else if (fechaNacimiento.getMonth () === fechaNacimiento.getMonth ()){
+            if (fechaNacimiento.getDay () > fechaActual.getDay ()){
+                // console.log ("Fecha no valida porque no ha llegado el dia.");
+                fechaValida = false;
+            }
+        }
+    }
+
+    if (!fechaValida){
+        mensajeError = "La fecha no es valida";
+        res.redirect ("/registrarEmpleado");
+    }
 });
 
 // Ruta editarEmpleado
