@@ -1,5 +1,36 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
 
+    <div class="justify-content-center align-items-center h-100">
+        <div>
+            <form action="/pagoMembresia" method="post">
+                <h2 class="fw-bold mb-2 eliminarFormTitulo">Pagar Membresia</h2>
 
+                <div class="row" style="text-align: center;">
+                    <div class="col-sm">
+                    </div>
+
+                    <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
+                        <label class="form-label fw-bold" for="digitarID">ID</label>
+                        <input
+                            id="digitarID"
+                            class="form-control"
+                        />
+                    </div>
+
+                    <div class="col-sm">
+                    </div>
+                </div>
+
+                <div style="text-align:center; margin-top: 50px;">
+                    <button type="submit" class="btn btn-success">Registrar Pago</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="text-align:center; padding-top: 120px;">
+            <!-- Rellenar dinamicamente dependiendo de si se logro o fallo la eliminacion -->
+            <p>Esto es una prueba</p>
+        </div>
+    </div>
 
 <%- include ('partials/footer.ejs') -%> 

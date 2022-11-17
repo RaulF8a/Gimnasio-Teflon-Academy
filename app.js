@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
@@ -22,16 +23,38 @@ app.use (bodyParser.urlencoded ({extended: true}));
 app.use (express.static ("public"));
 app.set ("view engine", "ejs");
 
-// Para incializar Passport.
-// app.use (session ({
-//     secret: process.env.SECRET,
-//     resave: false,
-//     saveUninitialized: false
-// }));
-// app.use (passport.initialize ());
-// app.use (passport.session ());
+// Inicializar Passport.
+app.use (session ({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false
+}));
+app.use (passport.initialize ());
+app.use (passport.session ());
 
 let mensajeError = ""
+
+// Generar ID de usuario.
+function generarID () {
+    const letras = ["A", "B", "C", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+    const numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    let id = "";
+    let random;
+
+    // Generar letras
+    for (let index = 0; index < 5; index++) {
+        random = Math.floor(Math.random() * (25 - 0)) + 0;
+        id = id+letras[random];
+    }
+
+    // Generar numeros
+    for (let index = 0; index < 5; index++) {
+        random = Math.floor(Math.random() * (10 - 0)) + 0;
+        id = id+numeros[random];
+    }
+    
+    return id;
+}
 
 // Ruta Home
 app.get ("/", (req, res) => {
