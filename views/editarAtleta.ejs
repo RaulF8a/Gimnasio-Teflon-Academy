@@ -1,5 +1,49 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+<!DOCTYPE html>
+<div>
+    <form action="../../form-result.php" method="post" target="_blank">
+        <p><label>ID atleta: <input type="search" name="Atleta"></label></p>
+        <p><input type="submit" value="Buscar"></p>
+      
+    </form>
 
+    <form name="CasillasEditAtleta" method="post" action="/send.php">
+        <!-- Botones de opción -->
 
+        Nombre:
+        <input type="text" name="Nombre" autocomplete = "off"
+        placeholder="Introduce tu nombre" />
+
+        Membresia:
+        <select name="Membresias">
+            <!-- Opciones de la lista -->
+            <option value="1">Basica</option>
+            <option value="2" selected>Seleccion</option> <!-- Opción por defecto -->
+            <option value="3">Prime</option>
+        </select>
+        
+        Altura:
+        <input type="number" name="Altura" value="140" min="145" max="230" step="1" />
+     
+        Peso:
+        <input type="number" name="Peso" value="60.0" min="40.0" max="250.0" step="1" />
+
+        Ejercicio:
+        <textarea name="textarea" rows="10" cols="50">Write something here</textarea>
+
+        Teléfono:
+        <input type="tel" name="Telefono" placeholder="+XX XXX XXXXXX" />
+
+        Email:
+        <input type="email" name="correo" placeholder="nombre@dominio.com" />
+
+        <!-- Casillas de verificación (marcada por defecto) -->
+        <p><input type="submit" value="Enviar datos"></p>
+       
+        
+    </form>
+
+    
+</div>
 
 <%- include ('partials/footer.ejs') -%> 
