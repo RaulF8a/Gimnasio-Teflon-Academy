@@ -1,5 +1,42 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
 
-<!-- Es la de la pagina 7 de la actividad 12 -->
+    <div class="justify-content-center align-items-center h-100">
+        <div>
+            <form action="/menuPrincipal" method="post">
+                <h2 class="fw-bold mb-2 menuPrincipalTitulo" style="text-align: center">
+                    Menú principal 
+                </h2><br>
+                <!--Primera fila buttons-->
+                <div style="text-align: center; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Entradas y salidas</button>
+                    <button type="submit" class="btn btn-dark">Registro Cliente</button> 
+                </div>
+                <!--Segunda fila buttons-->
+                <div style="text-align: center; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Pago de membresía</button>
+                    <button type="submit" class="btn btn-dark">Visualiza-Actualizar bitácora del atelta</button> 
+                </div>
+                <!--Tercera fila buttons-->
+                <div style="text-align: center; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Registro Empleado</button>
+                    <button type="submit" class="btn btn-dark">Eliminar Cliente</button> 
+                </div>
+                <!--Cuarta fila buttons-->
+                <div style="text-align: center; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Eliminar Empleado</button>
+                    <button type="submit" class="btn btn-dark">Editar Datos Cliente</button> 
+                </div>
+                <!--Quinta fila buttons-->
+                <div style="text-align: center; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Editar Empleado</button>
+                    <button type="submit" class="btn btn-dark">Generar Balance de Ventas</button> 
+                </div>
+                <!--Back button-->
+                <div style="text-align: right; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Regresar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 <%- include ('partials/footer.ejs') -%> 

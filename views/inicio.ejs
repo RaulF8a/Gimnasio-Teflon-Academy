@@ -1,5 +1,26 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
 
-<!-- Es la de la pagina 6 de la actividad 12 -->
+    <div  class=" justify-content-center align-items-center h-100">
+        <div>
+            <form action="/inicio" method="post">
+                <h2 class="fw-blob mb-2 inicioForm" style="text-align: center">
+                    Bienvenido cliente
+                </h2>
+                <!--Button-->
+                <div style="text-align: center; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Vizualizar bitácora del cliente</button>
+                </div>
+            </form>
+        </div>
+        <br><br><br><br><br><br><br><br><br><br><br><br>
+        <div style="text-align: right; margin-top: 25px">
+            <button type="submit" class="btn btn-dark">Aceptar</button>
+            <br><label for="">Se registró su visita</label>
+        </div>
+        <div style="text-align: center; padding-top: 21px">
+            <!-- Rellenar dinamicamente con mensaje de error -->
+            <p><%= mensajeError %> </p>
+        </div>
+    </div>
 
 <%- include ('partials/footer.ejs') -%> 
