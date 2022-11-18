@@ -98,3 +98,8 @@ body{
     text-align: center;
     padding-top: 25px; 
 }
+
+/* Tabla Resumen Atleta */
+.tablaResumen {
+    padding-top: 150px;
+}
