@@ -13,18 +13,18 @@ const app = express ();
 const __dirname = path.resolve ();
 
 // Conexion a la base de datos.
-let conexion = mysql2.createConnection ({
-    host: "localhost",
-    user: "root",
-    password: process.env.DB_PASSWORD,
-    database: "pruebas"
-});
+// let conexion = mysql2.createConnection ({
+//     host: "localhost",
+//     user: "root",
+//     password: process.env.DB_PASSWORD,
+//     database: "pruebas"
+// });
 
-conexion.connect ((err) => {
-    if (err) throw err;
+// conexion.connect ((err) => {
+//     if (err) throw err;
     
-    console.log ("Conexion exitosa.");
-});
+//     console.log ("Conexion exitosa.");
+// });
 
 // Configuraciones de aplicacion.
 app.use (bodyParser.urlencoded ({extended: true}));
@@ -108,34 +108,34 @@ app.get ("/login", (req, res) => {
         return;
     }
 
-    conexion.query (`SELECT * FROM users WHERE user='${usuario}';`, (err, datos) => {
-        if (err) throw err;
+    // conexion.query (`SELECT * FROM users WHERE user='${usuario}';`, (err, datos) => {
+    //     if (err) throw err;
 
-        if (datos.length == 0 || !(bycryptjs.compare (passCrypt, datos[0].pass))){
-            res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, sesion: sesionIniciada, 
-            mensajeError: "Usuario y/o contraseña incorrecto."});
+    //     if (datos.length == 0 || !(bycryptjs.compare (passCrypt, datos[0].pass))){
+    //         res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, sesion: sesionIniciada, 
+    //         mensajeError: "Usuario y/o contraseña incorrecto."});
 
-            return;
-        } 
+    //         return;
+    //     } 
 
-        conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosE) =>{
-            if (!datos){
-                conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosA) => {
-                    usuarioSesionIniciada.id = datosA[0].id;
-                    usuarioSesionIniciada.nombre = datosA[0].nombre;
-                    usuarioSesionIniciada.puesto = datosA[0].puesto;
-                });
-            }
-            else{
-                usuarioSesionIniciada.id = datosE[0].id;
-                usuarioSesionIniciada.nombre = datosE[0].nombre;
-                usuarioSesionIniciada.puesto = datosE[0].puesto;
-            }
-        });
+    //     conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosE) =>{
+    //         if (!datos){
+    //             conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosA) => {
+    //                 usuarioSesionIniciada.id = datosA[0].id;
+    //                 usuarioSesionIniciada.nombre = datosA[0].nombre;
+    //                 usuarioSesionIniciada.puesto = datosA[0].puesto;
+    //             });
+    //         }
+    //         else{
+    //             usuarioSesionIniciada.id = datosE[0].id;
+    //             usuarioSesionIniciada.nombre = datosE[0].nombre;
+    //             usuarioSesionIniciada.puesto = datosE[0].puesto;
+    //         }
+    //     });
 
-        sesionIniciada = true;
-        res.redirect ("/menuPrincipal");
-    });
+    //     sesionIniciada = true;
+    //     res.redirect ("/menuPrincipal");
+    // });
 
 });
 
@@ -206,9 +206,9 @@ app.get ("/crearContrasenia", (req, res) => {
 
     let passCrypt = await bycryptjs.hash (pass, 8);
 
-    conexion.query ("INSERT INTO users SET ?", {user:usuarioRegistrado.id, pass:passCrypt, rol:usuarioRegistrado.puesto});
+    // conexion.query ("INSERT INTO users SET ?", {user:usuarioRegistrado.id, pass:passCrypt, rol:usuarioRegistrado.puesto});
 
-    res.redirect ("/menuPrincipal");
+    // res.redirect ("/menuPrincipal");
 });
 
 // Ruta agregarAtleta
@@ -295,20 +295,20 @@ app.get ("/registrarEmpleado", (req, res) => {
     const escolaridad = req.body.escolaridad;
     const puesto = req.body.puesto;
 
-    conexion.query ("INSERT INTO empleado SET ?", {id:id, nombre:nombre, curp:curp, sueldo:sueldo, fechaNacimiento:fechaN, 
-    rfc:rfc, escolaridad:escolaridad, puesto:puesto}, (err, results) => {
-        if (err){
-            console.log (err);
-        }
-        else{
-            usuarioRegistrado.id = id;
-            usuarioRegistrado.nombre = nombre;
-            usuarioRegistrado.puesto = puesto;
+    // conexion.query ("INSERT INTO empleado SET ?", {id:id, nombre:nombre, curp:curp, sueldo:sueldo, fechaNacimiento:fechaN, 
+    // rfc:rfc, escolaridad:escolaridad, puesto:puesto}, (err, results) => {
+    //     if (err){
+    //         console.log (err);
+    //     }
+    //     else{
+    //         usuarioRegistrado.id = id;
+    //         usuarioRegistrado.nombre = nombre;
+    //         usuarioRegistrado.puesto = puesto;
             
-            console.log (usuarioRegistrado);
-            res.redirect ("/crearContrasenia");
-        }
-    });
+    //         console.log (usuarioRegistrado);
+    //         res.redirect ("/crearContrasenia");
+    //     }
+    // });
 
 });
 
