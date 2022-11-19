@@ -49,14 +49,20 @@ body{
 }
 
 /* Imagenes */
+/*.img {
+    background-image: url("/public/images/login.png"), url("/public/images/login2.png"), url("/public/images/login3.png"); 
+    background-repeat: no-repeat;
+    background-position: 130px 140px, 75px 60px, 50px 90px;
+    background-size: 300px, 200px, 30px;
+}*/
+
+/*
 .img {
-    /* background-image: url("images/login.png"), url("images/login2.png"), url("images/login3.png"); */
-    /* background-repeat: no-repeat;
-    background-position: center;
-    background-size: 300px, 200px, 300px; */
-    position: relative;
-    top: 30px;
-}
+    background-image: url("/public/images/imagen.png"); 
+    background-repeat: no-repeat;
+    background-position: 130px 140px;
+    background-size: 300px;
+}*/
 
 /* Login */
 .entradaLogin {
