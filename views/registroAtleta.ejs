@@ -26,7 +26,7 @@
                     </div>
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="Altura">Altura</label>
-                        <input id="Altura" class="form-control" pattern="^[0-3]\.[0-9]{2}$"
+                        <input id="Altura" name="altura" class="form-control" pattern="^[0-3]\.[0-9]{2}$"
                         onsubmit="validate (this)" />
                     </div>
                 </div>
@@ -41,25 +41,34 @@
 
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="Peso">Peso</label>
-                        <input id="Peso" class="form-control" pattern="^[1-2]*[0-9]{2}\.[0-9]{2}$"
+                        <input id="Peso" name="peso" class="form-control" pattern="^[0-9]{1,4}\.{0,1}[0-9]{1,10}$"
                         onsubmit="validate (this)" />
                     </div>
                 </div>
                 <!--Tercera fila-->
                 <div class="row" style="text-align: center">
-                    <div class="col-sm"></div>
+                    <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
+                        <label class="form-label fw-bold" for="CURP">CURP</label>
+                        <input
+                            id="CURP"
+                            name="curp"
+                            class="form-control"
+                            pattern="^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$"
+                            onsubmit="validate (this)"
+                            required
+                        />
+                    </div>
 
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="membresia">Membresia</label>
                         <select id="membresia" name="membresia" class="form-select">
                             <option value="" selected hidden></option>
                             <option value="Semanal">Semanal</option>
-                            <option value="Mensual">Menesual</option>
+                            <option value="Mensual">Mensual</option>
                             <option value="Anual">Anual</option>
                         </select>
                     </div>
 
-                    <div class="col-sm"></div>
                 </div>
                 <!--Botones-->
                 <div style="text-align: center; margin-top: 25px">

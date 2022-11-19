@@ -10,47 +10,47 @@
                 <% if (privilegio === "Administrativo" || privilegio === "Auxiliar Administrativo") { %>
                     <div class="row" style="padding-top: 25px;">
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Acceso</button>
+                            <button type="submit" class="btn btn-dark"  formmethod="get" formaction="/registroAcceso">Acceso</button>
                         </div>
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Bitácora de Atelta</button> 
-                        </div>
-                    </div>
-    
-                    <div class="row">
-                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Pago de Membresía</button>
-                        </div>
-                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Reporte de Ventas</button> 
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/resumen"> Bitácora de Atelta</button> 
                         </div>
                     </div>
     
                     <div class="row">
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Agregar Atleta</button> 
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/pagoMembresia">Pago de Membresía</button>
                         </div>
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Agregar Empleado</button>
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/reporteVentas">Reporte de Ventas</button> 
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/registrarAtleta">Agregar Atleta</button> 
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/registrarEmpleado">Agregar Empleado</button>
                         </div>
                     </div>
     
     
                     <div class="row">
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Editar Atleta</button> 
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/editarAtleta">Editar Atleta</button> 
                         </div>
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Editar Empleado</button>
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/editarEmpleado">Editar Empleado</button>
                         </div>
                     </div>
     
                     <div class="row">
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Eliminar Atleta</button> 
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/eliminarAtleta">Eliminar Atleta</button> 
                         </div>
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Eliminar Empleado</button>
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/eliminarEmpleado">Eliminar Empleado</button>
                         </div>
                     </div>
     
@@ -58,7 +58,7 @@
                         <div class="col-sm"></div>
                         
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Punto de Venta</button> 
+                            <button type="submit" class="btn btn-dark botonPuntoVenta" formmethod="get" formaction="/puntoVentaMenu">Punto de Venta</button> 
                         </div>
     
                         <div class="col-sm"></div>
@@ -68,7 +68,7 @@
                         <div class="col-sm"></div>
                         
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
-                            <button type="submit" class="btn btn-dark">Bitácora de Atleta</button> 
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/resumen">Bitácora de Atleta</button> 
                         </div>
     
                         <div class="col-sm"></div>

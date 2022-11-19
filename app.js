@@ -40,8 +40,14 @@ let usuarioSesionIniciada = {
     nombre:"",
     puesto:""
 };
+let atletaBuscado = {
+    id:"",
+    nombre:"",
+    puesto:"" 
+};
 let carrito = [];
 let sesionIniciada = false;
+let campoEditar = "";
 
 // Generar ID de usuario.
 function generarID () {
@@ -63,6 +69,29 @@ function generarID () {
     }
     
     return id;
+}
+
+function validarFecha (fechaNacimiento, fechaActual){
+    // Un menor de 15 años no puede trabajar.
+    if (fechaNacimiento.getFullYear () > fechaActual.getFullYear () - 15){
+        // console.log ("Fecha no valida.");
+        return false;
+    }
+
+    if (fechaNacimiento.getFullYear () === fechaActual.getFullYear () - 15){
+        if (fechaNacimiento.getMonth () < fechaActual.getMonth ()){
+            // console.log ("Fecha no valida porque no ha llegado el mes.");
+            return false;
+        }
+        else if (fechaNacimiento.getMonth () === fechaNacimiento.getMonth ()){
+            if (fechaNacimiento.getDay () > fechaActual.getDay ()){
+                // console.log ("Fecha no valida porque no ha llegado el dia.");
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 // Ruta Home
@@ -162,7 +191,7 @@ app.get ("/menuPrincipal", (req, res) => {
     sesion: sesionIniciada, mensajeError: "", privilegio:usuarioSesionIniciada.puesto});
 })
 .post ("/menuPrincipal", (req, res) => {
-    
+    // Cuando seleccione editar empleado o atleta, redirigir primero a buscar.
 });
 
 // Ruta pagoMembresia
@@ -257,11 +286,17 @@ app.get ("/editarAtleta", (req, res) => {
         return;
     }
 
+    if (campoEditar.length === 0){
+        res.redirect ("/buscarAtleta");
+        
+        return;
+    }
+
     res.render ("editarAtleta", {titulo: "Editar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
+    sesion: sesionIniciada, mensajeError: "", campoEditarP: campoEditar});
 })
 .post ("/editarAtleta", (req, res) => {
-    //
+    // Al terminar de editar, hay que reiniciar la variable que contiene el campo.
 });
 
 // Ruta eliminarAtleta
@@ -277,6 +312,41 @@ app.get ("/eliminarAtleta", (req, res) => {
 })
 .post ("/eliminarAtleta", (req, res) => {
     //
+});
+
+app.get ("/seleccionarCampoAtleta", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("seleccionarCampoAtleta", {titulo: "Seleccionar Campo", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
+})
+.post ("/seleccionarCampoAtleta", (req, res) => {
+
+    // Redirigir a editar Atleta con el campo seleccionado.
+    campoEditar = req.body.campoEditar;
+    console.log (campoEditar);
+    res.redirect ("/editarAtleta");
+});
+
+// Buscar Atleta
+app.get ("/buscarAtleta", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("buscarAtleta", {titulo: "Buscar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
+})
+.post ("/buscarAtleta", (req, res) => {
+
+    // Si se encuentra el atleta, redirigir a seleccionar campo.
+    res.redirect ("/seleccionarCampoAtleta");
 });
 
 // Ruta resumen del atleta.
@@ -308,29 +378,12 @@ app.get ("/registrarEmpleado", (req, res) => {
 .post ("/registrarEmpleado", (req, res) => {
     let fechaNacimiento = new Date (req.body.fechaNacimiento);
     let fechaActual = new Date ();
-    let fechaValida = true;
+    let fechaValida;
     usuarioRegistrado.id = "";
     usuarioRegistrado.nombre = "";
     usuarioRegistrado.puesto = "";
     
-    // Un menor de 15 años no puede trabajar.
-    if (fechaNacimiento.getFullYear () > fechaActual.getFullYear () - 15){
-        // console.log ("Fecha no valida.");
-        fechaValida = false;
-    }
-
-    if (fechaNacimiento.getFullYear () === fechaActual.getFullYear () - 15){
-        if (fechaNacimiento.getMonth () < fechaActual.getMonth ()){
-            // console.log ("Fecha no valida porque no ha llegado el mes.");
-            fechaValida = false;
-        }
-        else if (fechaNacimiento.getMonth () === fechaNacimiento.getMonth ()){
-            if (fechaNacimiento.getDay () > fechaActual.getDay ()){
-                // console.log ("Fecha no valida porque no ha llegado el dia.");
-                fechaValida = false;
-            }
-        }
-    }
+    fechaValida = validarFecha (fechaNacimiento, fechaActual);
 
     if (!fechaValida){
         res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 

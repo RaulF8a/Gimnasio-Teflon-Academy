@@ -1,5 +1,18 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login:login, sesion: sesion}) -%>
 
+    <script>
+        function validate(input) {
+            let validityState_object = input.validity;
+
+            if (validityState_object.patternMismatch) {
+                input.setCustomValidity('Entrada no valida.');
+            } 
+            else {
+                input.setCustomValidity('');
+            }
+        }
+    </script>
+
     <div class="">
         <div class="container py-5">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -9,7 +22,7 @@
                     <div>
                     <form action="/login" method="post">
                         <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
-                        <p class="text-white-50 mb-5"></p>
+                        <p class="text-white-50 mb-4"></p>
 
                         <div class="form-outline form-white mb-4">
                         <label class="form-label" for="typeEmailX">ID</label>
@@ -17,10 +30,12 @@
                             name="user"
                             id="typeEmailX"
                             class="form-control form-control-lg"
+                            pattern="^[a-zA-Z0-9]{10}$"
+                            onsubmit="validate(this)"
                         />
                         </div>
 
-                        <div class="form-outline form-white mb-4 entradaLogin">
+                        <div class="form-outline form-white mb-4">
                         <label class="form-label" for="typePasswordX"
                             >Contraseña</label
                         >
@@ -32,7 +47,11 @@
                         />
                         </div>
 
-                        <button class="btn btn-outline-light btn-m px-5" type="submit">
+                        <div>
+                            <p> <%= mensajeError %> </p>
+                        </div>
+
+                        <button class="btn btn-outline-light btn-m px-5 buttonLogin" type="submit">
                         Iniciar Sesion
                         </button>
                     </form>
