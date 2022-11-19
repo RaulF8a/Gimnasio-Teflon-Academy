@@ -5,9 +5,6 @@ import path from 'path';
 import ejs from 'ejs';
 import mysql2 from 'mysql2';
 import bycryptjs from 'bcryptjs';
-// import passport from 'passport';
-// import session from 'express-session';
-// import PassportLocal from 'passport-local';
 
 const app = express ();
 const __dirname = path.resolve ();
@@ -31,16 +28,8 @@ app.use (bodyParser.urlencoded ({extended: true}));
 app.use (express.static ("public"));
 app.set ("view engine", "ejs");
 
-// // Inicializar Passport.
-// app.use (session ({
-//     secret: process.env.SECRET,
-//     resave: false,
-//     saveUninitialized: false
-// }));
-// app.use (passport.initialize ());
-// app.use (passport.session ());
-
 // Variables globales.
+let passRequested = false;
 let usuarioRegistrado = {
     id:"",
     nombre:"",
@@ -50,7 +39,8 @@ let usuarioSesionIniciada = {
     id:"",
     nombre:"",
     puesto:""
-}
+};
+let carrito = [];
 let sesionIniciada = false;
 
 // Generar ID de usuario.
@@ -77,7 +67,8 @@ function generarID () {
 
 // Ruta Home
 app.get ("/", (req, res) => {
-    res.render ("home", {titulo: "Gimnasio Teflon Academy", usuario: usuarioSesionIniciada.nombre, login: false, sesion: sesionIniciada, mensajeError: ""});
+    res.render ("home", {titulo: "Gimnasio Teflon Academy", usuario: usuarioSesionIniciada.nombre, 
+    login: false, sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/", (req, res) => {
     //
@@ -85,7 +76,8 @@ app.get ("/", (req, res) => {
 
 // Ruta inicio
 app.get ("/inicio", (req, res) => {
-    res.render ("inicio", {titulo: "Inicio", usuario: "Raul", login: false, sesion: sesionIniciada, mensajeError: ""});
+    res.render ("inicio", {titulo: "Inicio", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/inicio", (req, res) => {
     //
@@ -93,7 +85,8 @@ app.get ("/inicio", (req, res) => {
 
 // Ruta login
 app.get ("/login", (req, res) => {
-    res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, sesion: sesionIniciada, mensajeError: ""});
+    res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, 
+    sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/login", async (req, res) => {
     const usuario = req.body.user;
@@ -108,34 +101,34 @@ app.get ("/login", (req, res) => {
         return;
     }
 
-    // conexion.query (`SELECT * FROM users WHERE user='${usuario}';`, (err, datos) => {
-    //     if (err) throw err;
+    conexion.query (`SELECT * FROM users WHERE user='${usuario}';`, (err, datos) => {
+        if (err) throw err;
 
-    //     if (datos.length == 0 || !(bycryptjs.compare (passCrypt, datos[0].pass))){
-    //         res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, sesion: sesionIniciada, 
-    //         mensajeError: "Usuario y/o contraseña incorrecto."});
+        if (datos.length == 0 || !(bycryptjs.compare (passCrypt, datos[0].pass))){
+            res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, sesion: sesionIniciada, 
+            mensajeError: "Usuario y/o contraseña incorrecto."});
 
-    //         return;
-    //     } 
+            return;
+        } 
 
-    //     conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosE) =>{
-    //         if (!datos){
-    //             conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosA) => {
-    //                 usuarioSesionIniciada.id = datosA[0].id;
-    //                 usuarioSesionIniciada.nombre = datosA[0].nombre;
-    //                 usuarioSesionIniciada.puesto = datosA[0].puesto;
-    //             });
-    //         }
-    //         else{
-    //             usuarioSesionIniciada.id = datosE[0].id;
-    //             usuarioSesionIniciada.nombre = datosE[0].nombre;
-    //             usuarioSesionIniciada.puesto = datosE[0].puesto;
-    //         }
-    //     });
+        conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosE) =>{
+            if (!datos){
+                conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosA) => {
+                    usuarioSesionIniciada.id = datosA[0].id;
+                    usuarioSesionIniciada.nombre = datosA[0].nombre;
+                    usuarioSesionIniciada.puesto = datosA[0].puesto;
+                });
+            }
+            else{
+                usuarioSesionIniciada.id = datosE[0].id;
+                usuarioSesionIniciada.nombre = datosE[0].nombre;
+                usuarioSesionIniciada.puesto = datosE[0].puesto;
+            }
+        });
 
-    //     sesionIniciada = true;
-    //     res.redirect ("/menuPrincipal");
-    // });
+        sesionIniciada = true;
+        res.redirect ("/menuPrincipal");
+    });
 
 });
 
@@ -150,7 +143,8 @@ app.get ("/logout", (req, res) => {
 
 // Ruta seleccionServicio
 app.get ("/seleccionServicio", (req, res) => {
-    res.render ("seleccionServicio", {titulo: "Seleccionar Servicio", usuario: usuarioSesionIniciada.nombre, login: false, sesion: sesionIniciada, mensajeError: ""});
+    res.render ("seleccionServicio", {titulo: "Seleccionar Servicio", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/seleccionServicio", (req, res) => {
     //
@@ -158,15 +152,29 @@ app.get ("/seleccionServicio", (req, res) => {
 
 // Ruta menuPrincipal
 app.get ("/menuPrincipal", (req, res) => {
-    res.render ("menuPrincipal", {titulo: "Menu Principal", usuario: usuarioSesionIniciada.nombre, login: false, sesion: sesionIniciada, mensajeError: ""});
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+    
+    res.render ("menuPrincipal", {titulo: "Menu Principal", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: "", privilegio:usuarioSesionIniciada.puesto});
 })
 .post ("/menuPrincipal", (req, res) => {
-    //
+    
 });
 
 // Ruta pagoMembresia
 app.get ("/pagoMembresia", (req, res) => {
-    res.render ("pagoDeMembresia", {titulo: "Pago de Membresia", usuario: usuarioSesionIniciada.nombre, login: false, sesion: sesionIniciada, mensajeError: ""});
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("pagoDeMembresia", {titulo: "Pago de Membresia", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/pagoMembresia", (req, res) => {
     //
@@ -174,7 +182,8 @@ app.get ("/pagoMembresia", (req, res) => {
 
 // Ruta registroAcceso
 app.get ("/registroAcceso", (req, res) => {
-    res.render ("registroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, sesion: sesionIniciada, mensajeError: ""});
+    res.render ("registroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/registroAcceso", (req, res) => {
     //
@@ -182,7 +191,14 @@ app.get ("/registroAcceso", (req, res) => {
 
 // Ruta verRegistroAcceso
 app.get ("/verRegistroAcceso", (req, res) => {
-    res.render ("verRegistroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, sesion: sesionIniciada, mensajeError: ""});
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("verRegistroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/verRegistroAcceso", (req, res) => {
     //
@@ -190,6 +206,12 @@ app.get ("/verRegistroAcceso", (req, res) => {
 
 // Ruta crearContraseña
 app.get ("/crearContrasenia", (req, res) => {
+    if (!passRequested){
+        res.redirect ("/menuPrincipal");
+
+        return;
+    }
+
     res.render ("crearContrasenia", {titulo: "Crear Contraseña", usuario: usuarioSesionIniciada.nombre, login: false, sesion: sesionIniciada, 
     mensajeError: "", idUsuario:usuarioRegistrado.id});
 })
@@ -206,13 +228,20 @@ app.get ("/crearContrasenia", (req, res) => {
 
     let passCrypt = await bycryptjs.hash (pass, 8);
 
-    // conexion.query ("INSERT INTO users SET ?", {user:usuarioRegistrado.id, pass:passCrypt, rol:usuarioRegistrado.puesto});
+    conexion.query ("INSERT INTO users SET ?", {user:usuarioRegistrado.id, pass:passCrypt, rol:usuarioRegistrado.puesto});
 
-    // res.redirect ("/menuPrincipal");
+    passRequested = false;
+    res.redirect ("/menuPrincipal");
 });
 
 // Ruta agregarAtleta
 app.get ("/registrarAtleta", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("registroAtleta", {titulo: "Registrar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -222,6 +251,12 @@ app.get ("/registrarAtleta", (req, res) => {
 
 // Ruta editarAtleta
 app.get ("/editarAtleta", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("editarAtleta", {titulo: "Editar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -231,6 +266,12 @@ app.get ("/editarAtleta", (req, res) => {
 
 // Ruta eliminarAtleta
 app.get ("/eliminarAtleta", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("eliminarAtleta", {titulo: "Eliminar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -240,6 +281,12 @@ app.get ("/eliminarAtleta", (req, res) => {
 
 // Ruta resumen del atleta.
 app.get ("/resumen", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("resumen", {titulo: "Resumen de Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -249,6 +296,12 @@ app.get ("/resumen", (req, res) => {
 
 // Ruta agregarEmpleado
 app.get ("/registrarEmpleado", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -295,25 +348,34 @@ app.get ("/registrarEmpleado", (req, res) => {
     const escolaridad = req.body.escolaridad;
     const puesto = req.body.puesto;
 
-    // conexion.query ("INSERT INTO empleado SET ?", {id:id, nombre:nombre, curp:curp, sueldo:sueldo, fechaNacimiento:fechaN, 
-    // rfc:rfc, escolaridad:escolaridad, puesto:puesto}, (err, results) => {
-    //     if (err){
-    //         console.log (err);
-    //     }
-    //     else{
-    //         usuarioRegistrado.id = id;
-    //         usuarioRegistrado.nombre = nombre;
-    //         usuarioRegistrado.puesto = puesto;
+    conexion.query ("INSERT INTO empleado SET ?", {id:id, nombre:nombre, curp:curp, sueldo:sueldo, fechaNacimiento:fechaN, 
+    rfc:rfc, escolaridad:escolaridad, puesto:puesto}, (err, results) => {
+        if (err){
+            // console.log (err);
+            res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "Ocurrio un error. Vuelvelo a intentar."});
+        }
+        else{
+            usuarioRegistrado.id = id;
+            usuarioRegistrado.nombre = nombre;
+            usuarioRegistrado.puesto = puesto;
             
-    //         console.log (usuarioRegistrado);
-    //         res.redirect ("/crearContrasenia");
-    //     }
-    // });
+            console.log (usuarioRegistrado);
+            passRequested = true;
+            res.redirect ("/crearContrasenia");
+        }
+    });
 
 });
 
 // Ruta editarEmpleado
 app.get ("/editarEmpleado", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("editarEmpleado", {titulo: "Editar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -323,6 +385,12 @@ app.get ("/editarEmpleado", (req, res) => {
 
 // Ruta eliminarEmpleado
 app.get ("/eliminarEmpleado", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("eliminarEmpleado", {titulo: "Eliminar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -332,6 +400,12 @@ app.get ("/eliminarEmpleado", (req, res) => {
 
 // Ruta puntoVentaMenu
 app.get ("/puntoVentaMenu", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("puntoVentaMenu", {titulo: "Punto de Venta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -341,6 +415,12 @@ app.get ("/puntoVentaMenu", (req, res) => {
 
 // Ruta puntoVentaAñadirInventario
 app.get ("/puntoVentaAnadirInventario", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("puntoVentaAnadirInventario", {titulo: "Añadir al Inventario", usuario: usuarioSesionIniciada.nombre, 
     login: false, sesion: sesionIniciada, mensajeError: ""});
 })
@@ -350,15 +430,29 @@ app.get ("/puntoVentaAnadirInventario", (req, res) => {
 
 // Ruta puntoVentaCarrito
 app.get ("/puntoVentaCarrito", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("puntoVentaCarrito", {titulo: "Carrito", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/puntoVentaCarrito", (req, res) => {
-    //
+    // Arreglo de JSON con {nombre, precio}
+    
+    // Si la compra fue exitosa, se debe limpiar el carrito.
 });
 
 // Ruta puntoVentaEliminarInventario
 app.get ("/puntoVentaEliminarInventario", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("puntoVentaEliminarInventario", {titulo: "Eliminar del Inventario", usuario: usuarioSesionIniciada.nombre, 
     login: false, sesion: sesionIniciada, mensajeError: ""});
 })
@@ -368,6 +462,12 @@ app.get ("/puntoVentaEliminarInventario", (req, res) => {
 
 // Ruta puntoVentaInventario
 app.get ("/puntoVentaInventario", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("puntoVentaInventario", {titulo: "Inventario", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -377,7 +477,13 @@ app.get ("/puntoVentaInventario", (req, res) => {
 
 // Ruta puntoVentaTotal
 app.get ("/puntoVentaTotal", (req, res) => {
-    res.render ("puntoVentaTotal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("puntoVentaToatal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/puntoVentaTotal", (req, res) => {
@@ -386,6 +492,12 @@ app.get ("/puntoVentaTotal", (req, res) => {
 
 // Ruta reporteVentas
 app.get ("/reporteVentas", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
     res.render ("reporteVentas", {titulo: "Reporte de Ventas", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })

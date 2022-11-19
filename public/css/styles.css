@@ -50,10 +50,12 @@ body{
 
 /* Imagenes */
 .img {
-    background-image: url("images/login.png"), url("images/login2.png"), url("images/login3.png");
-    background-repeat: no-repeat;
+    /* background-image: url("images/login.png"), url("images/login2.png"), url("images/login3.png"); */
+    /* background-repeat: no-repeat;
     background-position: center;
-    background-size: 300px, 200px, 300px;
+    background-size: 300px, 200px, 300px; */
+    position: relative;
+    top: 30px;
 }
 
 /* Login */
@@ -97,6 +99,29 @@ body{
 .registrarEmpleadoFormInput {
     text-align: center;
     padding-top: 25px; 
+}
+
+/* Registrar Atleta */
+.registrarAtletaFormTitulo {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.registrarAtletaFormInput {
+    text-align: center;
+    padding-top: 25px;
+}
+
+/* Menu Principal */
+.menuPrincipalTitulo {
+    text-align: center;
+    padding-top: 50px;
+}
+
+/* Pagina de Inicio */
+.inicioFormTitle {
+    text-align: center;
+    padding-top: 50px;
 }
 
 /* Tabla Resumen Atleta */
