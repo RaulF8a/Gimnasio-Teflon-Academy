@@ -1,0 +1,22 @@
+<%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+
+<div class="justify-content-center align-items-center h-100">
+    <div>
+        <form action="/menuServicios" method="post">
+            <h2 class="fw-bold mb-2 menuPrincipalTitulo" style="text-align: center">
+                Menú de servicios 
+            </h2><br>
+
+            <div style="text-align: center; margin-top: 25px">
+                <button type="submit" class="btn btn-dark">GYM</button>
+                <button type="submit" class="btn btn-dark">Punto de venta</button> 
+            </div>
+
+            <div style="text-align: right; margin-top: 25px">
+                <button type="submit" class="btn btn-dark">Regresar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include ('partials/footer.ejs') -%>  

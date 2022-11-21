@@ -1,4 +1,4 @@
-<%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login:
+<!-- <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login:
 login, sesion: sesion}) -%>
 <div class="container d-flex align-items-center flex-column ">
   <div class="row mb-4">
@@ -33,4 +33,64 @@ login, sesion: sesion}) -%>
       <a class="btn btn-secondary mb-5" href="#" role="button">Regresar</a>
     </div>
   </div>
-<%- include ('partials/footer.ejs') -%>
+<%- include ('partials/footer.ejs') -%> -->
+<%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+    
+    <div style="text-align: center; padding-top: 21px">
+        <!-- Rellenar dinamicamente con mensaje de error -->
+        <p><%= mensajeError %> </p>
+    </div>
+
+<%- include ('partials/footer.ejs') -%> 
+
+<!-- <div class="justify-contenent-center h-100">
+    <h2 class="fw-blob mb-2 puntoVentaCarrito", method="post">
+        Añadir al carrito
+    </h2>
+</div><br><br>
+<div class="justify-contenent-center">
+    <table border="2", width="300", height="200", align="left">
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+        </tr>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+        </tr>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+        </tr>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+        </tr>
+    </table>
+    <table border="2", width="300", height="200", align="right">
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+        </tr>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+        </tr>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+        </tr>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+        </tr>
+    </table><br><br>
+</div>
+<div align="center">
+    <button type="submit" class="btn btn-dark">Añadir Producto</button><br><br>
+    <button type="submit" class="btn btn-dark">Eliminar Producto</button><br><br><br>
+    <button type="submit" class="btn btn-dark">Pagar</button>
+</div>
+<div align="right">
+    <button type="submit" class="btn btn-dark">Cancelar</button>
+</div> -->

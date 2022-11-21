@@ -28,13 +28,13 @@
               <%if (!sesion) { %>    
                 <ul class="navbar-nav ms-auto navbar-right">
                   <li class="nav-item">
-                    <a class="nav-link">No has iniciado sesion</a>
+                    <a class="nav-link">No has iniciado sesión</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="#"></a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="/login">Iniciar Sesion</a>
+                    <a class="nav-link" href="/login">Iniciar Sesión</a>
                   </li>
                 </ul>
               <%} else {%>
@@ -47,15 +47,11 @@
                   </li>
                   <li class="nav-item">
                     <!-- Cuando implemente la autenticacion, enviar una señal de fin de sesion -->
-                    <a class="nav-link" href="/login">Cerrar Sesion</a>
+                    <a class="nav-link" href="/logout">Cerrar Sesión</a>
                   </li>
                 </ul>
               <% } %> 
             <%}%>
           </div>
         </nav>
-
-      <div class="img">
-      </div>
-
       <div class="container">

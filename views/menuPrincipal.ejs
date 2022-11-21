@@ -1,5 +1,81 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
 
-<!-- Es la de la pagina 7 de la actividad 12 -->
+    <div class="justify-content-center align-items-center h-100">
+        <div>
+            <form action="/menuPrincipal" method="post">
+                <h2 class="fw-bold mb-2 menuPrincipalTitulo" style="text-align: center">
+                    Menú Principal 
+                </h2>
+                
+                <% if (privilegio === "Administrativo" || privilegio === "Auxiliar Administrativo") { %>
+                    <div class="row" style="padding-top: 25px;">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark"  formmethod="get" formaction="/registroAcceso">Acceso</button>
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/resumen"> Bitácora de Atelta</button> 
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/pagoMembresia">Pago de Membresía</button>
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/reporteVentas">Reporte de Ventas</button> 
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/registrarAtleta">Agregar Atleta</button> 
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/registrarEmpleado">Agregar Empleado</button>
+                        </div>
+                    </div>
+    
+    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/editarAtleta">Editar Atleta</button> 
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/editarEmpleado">Editar Empleado</button>
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/eliminarAtleta">Eliminar Atleta</button> 
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/eliminarEmpleado">Eliminar Empleado</button>
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-sm"></div>
+                        
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark botonPuntoVenta" formmethod="get" formaction="/puntoVentaMenu">Punto de Venta</button> 
+                        </div>
+    
+                        <div class="col-sm"></div>
+                    </div>
+                <% } else { %>
+                    <div class="row">
+                        <div class="col-sm"></div>
+                        
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/resumen">Bitácora de Atleta</button> 
+                        </div>
+    
+                        <div class="col-sm"></div>
+                    </div>                   
+                <% } %>
+            </form>
+        </div>
+    </div>
 
 <%- include ('partials/footer.ejs') -%> 

@@ -1,5 +1,110 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+    
+    <script>
+        function validate(input) {
+            let validityState_object = input.validity;
+
+            if (validityState_object.patternMismatch) {
+                input.setCustomValidity('Entrada no valida.');
+            } 
+            else {
+                input.setCustomValidity('');
+            }
+        }
+    </script>
 
 
+    <div class="justify-content-center align-items-center h-100">
+        <div>
+            <form action="/editarAtleta" method="post">
+                <h2 class="fw-bold mb-2 eliminarFormTitulo">Editar <%= campoEditarP  %></h2>
+                
+                    <div class="row" style="text-align: center">
+                        <div class="col-sm"></div>
+                
+                        <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
+                            <label class="form-label fw-bold" for="nuevoValor">Nuevo Valor</label>
+                            <% if (campoEditarP === "Fecha de Nacimiento") { %>
+                                <input id="nuevoValorFecha" name="nuevoValor" class="form-control" type="date"/>
+                            <% } else if (campoEditarP === "CURP") { %>
+                                <input
+                                    id="CURP"
+                                    name="nuevoValorCurp"
+                                    class="form-control"
+                                    pattern="^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$"
+                                    onsubmit="validate (this)"
+                                />
+                            <% } else if (campoEditarP === "Altura") { %>
+                                <input id="altura" name="nuevoValorAltura" class="form-control" pattern="^[0-3]\.[0-9]{2}$"
+                                onsubmit="validate (this)" />
+                            <% } else if (campoEditarP === "Peso") { %>
+                                <input id="peso" name="nuevoValorPeso" class="form-control" pattern="^[0-9]{1,4}\.{0,1}[0-9]{1,10}$"
+                                onsubmit="validate (this)" />
+                                
+                            <% } else if (campoEditarP === "Membresia") { %>
+                                <select id="membresia" name="nuevoValorMembresia" class="form-select">
+                                    <option value="" selected hidden></option>
+                                    <option value="Semanal">Semanal</option>
+                                    <option value="Mensual">Mensual</option>
+                                    <option value="Anual">Anual</option>
+                                </select>
+                            <% } else { %>
+                                <input id="nuevoValor" name="nuevoValor" class="form-control" />
+                            <% } %>
+                        </div>
+                
+                        <div class="col-sm"></div>
+                    </div>
+                   
+    
+                    <div style="text-align:center; margin-top: 30px;">
+                        <button type="submit" class="btn btn-danger">Editar</button>
+                    </div>
+
+            </form>
+        </div>
+
+        <div style="text-align: center; padding-top: 120px">
+            <!-- Rellenar dinamicamente con mensaje de error -->
+            <p> <%= mensajeError %> </p>
+        </div>
+    </div>
+    
+
+    
+<!-- <div>
+        <form action="../../form-result.php" method="post" target="_blank">
+            <p><label>ID atleta: <input type="search" name="Atleta"></label></p>
+            <p><input type="submit" value="Buscar"></p>
+        
+        </form>
+
+        <form name="CasillasEditAtleta" method="post" action="/send.php">
+
+            <input type="text" name="Nombre" autocomplete = "off"
+            placeholder="Introduce tu nombre" />
+
+            <select name="Membresias">
+                <option value="1">Basica</option>
+                <option value="3">Prime</option>
+            </select>
+            
+            <input type="number" name="Altura" value="140" min="145" max="230" step="1" />
+        
+            <input type="number" name="Peso" value="60.0" min="40.0" max="250.0" step="1" />
+
+            <textarea name="textarea" rows="10" cols="50">Write something here</textarea>
+
+            <input type="tel" name="Telefono" placeholder="+XX XXX XXXXXX" />
+
+            <input type="email" name="correo" placeholder="nombre@dominio.com" />
+
+            <p><input type="submit" value="Enviar datos"></p>
+        
+            
+        </form>
+
+        
+    </div> -->
 
 <%- include ('partials/footer.ejs') -%> 

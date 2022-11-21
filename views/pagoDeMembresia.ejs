@@ -21,6 +21,24 @@
                     </div>
                 </div>
 
+                <div class="row" style="text-align: center;">
+                    <div class="col-sm">
+                    </div>
+
+                    <div class="form-outline form-white mb-4 col-sm-2 registrarEmpleadoFormInput">
+                        <label class="form-label fw-bold" for="periodoPagado">Periodo Pagado</label>
+                        <select id="periodoPagado" name="periodoPagado" class="form-select">
+                            <option value="" selected hidden></option>
+                            <option value="Semanal">Semanal</option>
+                            <option value="Mensual">Mensual</option>
+                            <option value="Anual">Anual</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm">
+                    </div>
+                </div>
+
                 <div style="text-align:center; margin-top: 50px;">
                     <button type="submit" class="btn btn-success">Registrar Pago</button>
                 </div>
@@ -29,7 +47,7 @@
 
         <div style="text-align:center; padding-top: 120px;">
             <!-- Rellenar dinamicamente dependiendo de si se logro o fallo la eliminacion -->
-            <p>Esto es una prueba</p>
+            <p><%= mensajeError %> </p>
         </div>
     </div>
 

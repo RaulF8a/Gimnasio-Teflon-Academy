@@ -1,7 +1,20 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login:login, sesion: sesion}) -%>
 
-    <div class="vh-100">
-        <div class="container py-5 h-100">
+    <script>
+        function validate(input) {
+            let validityState_object = input.validity;
+
+            if (validityState_object.patternMismatch) {
+                input.setCustomValidity('Entrada no valida.');
+            } 
+            else {
+                input.setCustomValidity('');
+            }
+        }
+    </script>
+
+    <div class="">
+        <div class="container py-5">
             <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-11 col-md-7 col-lg-5 col-xl-4">
                 <div class="card bg-dark text-white" style="border-radius: 1rem">
@@ -9,29 +22,36 @@
                     <div>
                     <form action="/login" method="post">
                         <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
-                        <p class="text-white-50 mb-5"></p>
+                        <p class="text-white-50 mb-4"></p>
 
                         <div class="form-outline form-white mb-4">
                         <label class="form-label" for="typeEmailX">ID</label>
                         <input
-                            type="email"
+                            name="user"
                             id="typeEmailX"
                             class="form-control form-control-lg"
+                            pattern="^[a-zA-Z0-9]{10}$"
+                            onsubmit="validate(this)"
                         />
                         </div>
 
-                        <div class="form-outline form-white mb-4 entradaLogin">
+                        <div class="form-outline form-white mb-4">
                         <label class="form-label" for="typePasswordX"
                             >Contraseña</label
                         >
                         <input
                             type="password"
+                            name="password"
                             id="typePasswordX"
                             class="form-control form-control-lg"
                         />
                         </div>
 
-                        <button class="btn btn-outline-light btn-lg px-5" type="submit">
+                        <div>
+                            <p> <%= mensajeError %> </p>
+                        </div>
+
+                        <button class="btn btn-outline-light btn-m px-5 buttonLogin" type="submit">
                         Iniciar Sesion
                         </button>
                     </form>

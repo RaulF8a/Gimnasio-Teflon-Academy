@@ -13,6 +13,7 @@
                         <label class="form-label fw-bold" for="digitarContrasenia">Contraseña</label>
                         <input
                             id="digitarContrasenia"
+                            name="password"
                             class="form-control"
                             type="password"
                             placeholder="Minimo 8 caracteres"
@@ -32,6 +33,7 @@
                         <label class="form-label fw-bold" for="confirmarContrasenia">Confirmar Contraseña</label>
                         <input
                             id="confirmarContrasenia"
+                            name="confirmPassword"
                             class="form-control"
                             type="password"
                             placeholder="Minimo 8 caracteres"
@@ -49,9 +51,13 @@
             </form>
         </div>
 
-        <div style="text-align:center; padding-top: 80px;">
+        <div style="text-align:center; padding-top: 40px;">
             <!-- Rellenar dinamicamente con mensaje de error -->
-            <p>Esto es una prueba</p>
+            <p><%= mensajeError %></p>
+        </div>
+
+        <div class="fw-bold" style="text-align:center; padding-top: 10px; font-size: 24px;">
+            <p>Tu ID para iniciar sesión será <%= idUsuario %></p>
         </div>
     </div>
 

@@ -1,5 +1,5 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
-<div class="container d-flex align-items-center flex-column mb-3">
+<!-- <div class="container d-flex align-items-center flex-column mb-3">
     <div class="row mb-4">
       <div class="col-md">
         <h2 class="fw p-3 contraseniaFormTitulo">Eliminar del inventario</h2>
@@ -39,7 +39,39 @@
     <div class="d-flex flex-row-reverse">
       <a class="btn btn-secondary mb-5" role="button">Cancelar</a>
     </div>
-  </div>
+  </div> -->
+
+<div class="justify-content-center align-items-center h-100">
+    <div>
+        <form action="/eliminarInventario" method="post">
+            <h2 class="fw-bold mb-2 eliminarFormTitulo">Eliminar del inventario</h2>
+
+            <div class="row" style="text-align: center;">
+                <div class="col-sm">
+                </div>
+
+                <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
+                    <label class="form-label fw-bold" for="digitarID">ID</label>
+                    <input
+                        id="digitarID"
+                        class="form-control"
+                    />
+                </div>
+
+                <div class="col-sm">
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top: 50px;">
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="text-align:center; padding-top: 120px;">
+        <p> <%= mensajeError %> </p>
+    </div>
+</div>
 
 
 <%- include ('partials/footer.ejs') -%> 

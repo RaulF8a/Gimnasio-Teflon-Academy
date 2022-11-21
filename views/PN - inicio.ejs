@@ -1,0 +1,22 @@
+<%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+
+    <div  class="justify-content-center align-items-center h-100">
+        <div>
+            <form action="/inicio" method="post">
+                <h2 class="fw-bold mb-2 inicioFormTitle" style="text-align: center">
+                    Bienvenido <%= usuario %>
+                </h2>
+                <!--Button-->
+                <div style="text-align: center; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Vizualizar Bitácora</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="text-align: center; padding-top: 21px">
+            <!-- Rellenar dinamicamente con mensaje de error -->
+            <p><%= mensajeError %> </p>
+        </div>
+    </div>
+
+<%- include ('partials/footer.ejs') -%> 
