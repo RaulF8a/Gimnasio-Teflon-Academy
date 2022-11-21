@@ -1,5 +1,45 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
-
+<div class="container d-flex align-items-center flex-column mb-3">
+    <div class="row mb-4">
+      <div class="col-md">
+        <h2 class="fw p-3 contraseniaFormTitulo">Eliminar del inventario</h2>
+        <div class="mb-1 mt-3 col">
+          <br />
+          <label
+            for="exampleFormControlInput1"
+            class="fw-bold form-label text-nowrap"
+            >ID del articulo</label
+          >
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          id="exampleFormControlInput1"
+          placeholder="ID"
+        />
+      </div>
+    </div>
+    <div class="row">
+      <div class="d-grid gap-2">
+        <a class="btn btn-secondary col mb-5" role="button">Eliminar del inventario</a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="alert alert-success" role="alert">
+        Mensaje de aprobacion
+      </div>
+    </div>
+    <div class="row">
+      <div class="alert alert-danger" role="alert">
+        Mensaje de Error
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="d-flex flex-row-reverse">
+      <a class="btn btn-secondary mb-5" role="button">Cancelar</a>
+    </div>
+  </div>
 
 
 <%- include ('partials/footer.ejs') -%> 
