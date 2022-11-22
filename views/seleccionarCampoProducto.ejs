@@ -1,0 +1,37 @@
+<%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+
+<div class="justify-content-center align-items-center h-100">
+    <div>
+        <form action="/seleccionarCampoProducto" method="post">
+            <h2 class="fw-bold mb-2 eliminarFormTitulo">Seleccionar Campo a Editar</h2>
+
+                <div class="row" style="text-align: center">
+                    <div class="col-sm"></div>
+
+                    <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
+                        <label class="form-label fw-bold" for="campoEditar">Campo a Editar</label>
+                        <select id="campoEditar" name="campoEditar" class="form-select">
+                            <option value="" selected hidden></option>
+                            <option value="nombre">Nombre</option>
+                            <option value="descripcion">Descripción</option>
+                            <option value="precio">Precio</option>
+                            <option value="existencia">Existencia</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm"></div>
+                </div>
+
+                <div style="text-align:center; margin-top: 30px;">
+                    <button type="submit" class="btn btn-dark">Seleccionar</button>
+                </div>
+        </form>
+    </div>
+
+    <div style="text-align: center; padding-top: 120px">
+        <!-- Rellenar dinamicamente con mensaje de error -->
+        <p> <%= mensajeError %> </p>
+    </div>
+</div>
+
+<%- include ('partials/footer.ejs') -%> 

@@ -51,6 +51,7 @@ let carrito = [];
 // carrito.push ({nombre:"Maruchan", precio:"23.65", cantidad:"1"});
 let sesionIniciada = false;
 let campoEditar = "";
+let idEditar = "";
 
 // Generar ID de usuario.
 function generarID () {
@@ -137,7 +138,15 @@ function obtenerFecha () {
 }
 
 function capitalizar (cadena) {
-    return cadena.charAt(0).toUpperCase() + cadena.slice(1);
+    let cadenaCapitalizada = cadena.split(" ");
+
+    for (let i = 0; i < cadenaCapitalizada.length; i++) {
+        cadenaCapitalizada[i] = cadenaCapitalizada[i][0].toUpperCase() + cadenaCapitalizada[i].substr(1);
+    }
+
+    cadenaCapitalizada = cadenaCapitalizada.join(" ");
+
+    return cadenaCapitalizada;
 }
 
 // Ruta Home
@@ -334,6 +343,7 @@ app.get ("/editarAtleta", (req, res) => {
 })
 .post ("/editarAtleta", (req, res) => {
     // Al terminar de editar, hay que reiniciar la variable que contiene el campo.
+    campoEditar = "";
 });
 
 // Ruta eliminarAtleta
@@ -365,7 +375,6 @@ app.get ("/seleccionarCampoAtleta", (req, res) => {
 
     // Redirigir a editar Atleta con el campo seleccionado.
     campoEditar = req.body.campoEditar;
-    console.log (campoEditar);
     res.redirect ("/editarAtleta");
 });
 
@@ -381,7 +390,6 @@ app.get ("/buscarAtleta", (req, res) => {
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/buscarAtleta", (req, res) => {
-
     // Si se encuentra el atleta, redirigir a seleccionar campo.
     res.redirect ("/seleccionarCampoAtleta");
 });
@@ -529,7 +537,8 @@ app.get ("/puntoVentaCarrito", (req, res) => {
             return;
         }
 
-        let producto = {nombre:results[0].nombre, precio:results[0].precio.toString (), cantidad:"1"}
+        let producto = {id:results[0].id_producto, nombre:results[0].nombre, precio:results[0].precio.toString (), cantidad:"1",
+        existencia:results[0].existencia};
         carrito.push (producto);
 
         res.redirect ("/puntoVentaCarrito");
@@ -568,6 +577,8 @@ app.get ("/puntoVentaTotal", (req, res) => {
 
     let total = 0;
 
+    // console.log (carrito);
+
     for (let index = 0; index < carrito.length; index++){
         total += (parseFloat (carrito[index].precio) * parseInt (carrito[index].cantidad));
     }
@@ -593,45 +604,63 @@ app.post ("/guardarCuenta", (req, res) => {
     let numeroCuenta = generarNumeroCuenta ();
     let nuevaExistencia = 0;
     let fecha = obtenerFecha ();
-    let cantidadComprada;
-    let productoActual;
-    let totalProductoActual;
+    let cantidadComprada = 0;
+    let productoActualNombre = "";
+    let totalProductoActual = 0;
+    let productosVendidos = 0;
+    let idActual = 0;
 
-    console.log (numeroCuenta);
+    // console.log (numeroCuenta);
 
     // Actualizar la existencia.
-    for (let index = 0; index < carrito.length; index++){
-        cantidadComprada = parseInt (carrito[index].cantidad);
-        productoActual = carrito[index].nombre;
+    // for (let index = 0; index < carrito.length; index++){
+    //     cantidadComprada = parseInt (carrito[index].cantidad);
+    //     productosVendidos += cantidadComprada;
+    //     productoActual = carrito[index].id;
 
-        conexion.query (`SELECT existencia FROM productos WHERE nombre="${productoActual}"`, (err, datos) => {
+    //     conexion.query (`SELECT existencia FROM productos WHERE nombre="${productoActual}"`, (err, datos) => {
+    //         if (err) throw err;
+
+    //         nuevaExistencia = datos[0].existencia - cantidadComprada;
+    //         conexion.query (`UPDATE productos SET existencia=${nuevaExistencia} WHERE id_producto=${productoActual}`);
+    //     });
+    // }
+
+    carrito.forEach ((elemento) => {
+        cantidadComprada = parseInt (elemento.cantidad);
+        productosVendidos += cantidadComprada;
+        idActual = elemento.id;
+        productoActualNombre = elemento.nombre;
+        nuevaExistencia = elemento.existencia - cantidadComprada;
+        
+        conexion.query (`UPDATE productos SET existencia=${nuevaExistencia} WHERE id_producto=${idActual}`, (err) => {
             if (err) throw err;
-
-            nuevaExistencia = datos[0].existencia - cantidadComprada;
-            conexion.query (`UPDATE productos SET existencia=${nuevaExistencia} WHERE nombre="${productoActual}"`);
         });
-
-    }
+    });
 
     // Crear una cuenta.
     conexion.query (`INSERT INTO venta SET ?`, {id_venta:numeroCuenta, fecha:fecha, total:total, 
-    cantidadProductos:carrito.length});
+    cantidadProductos:productosVendidos});
 
     // Crear el reporte de venta.
     for (let index = 0; index < carrito.length; index++){
-        productoActual = carrito[index].nombre;
+        idActual = carrito[index].id;
         cantidadComprada = parseInt (carrito[index].cantidad);
-        totalProductoActual = parseFloat (carrito[index].precio) * cantidadComprada;
+        totalProductoActual = parseFloat (parseFloat (carrito[index].precio) * cantidadComprada);
 
-        console.log (productoActual);
-        console.log (cantidadComprada);
-        console.log (totalProductoActual);
+        // console.log (idActual);
+        // console.log (productoActual);
+        // console.log (cantidadComprada);
+        // console.log (totalProductoActual);
 
-        conexion.query (`SELECT id_producto FROM productos WHERE nombre="${productoActual}"`, (err, datos) => {
+        // conexion.query (`SELECT id_producto FROM productos WHERE nombre="${productoActual}"`, (err, datos) => {
+        //     if (err) throw err;
+        //     id = datos[0].id_producto;   
+        // });
+        
+        conexion.query (`INSERT INTO detalle_venta SET ?`, {id_producto:idActual, cantidad:cantidadComprada,
+        total:totalProductoActual, id_venta:numeroCuenta}, (err) => {
             if (err) throw err;
-
-            conexion.query (`INSERT INTO detalle_venta SET ?`, {id_producto:datos[0].id_producto, cantidad:cantidadComprada,
-            total:totalProductoActual, id_venta:numeroCuenta});
         });
     }
 
@@ -706,8 +735,81 @@ app.get ("/puntoVentaEditarInventario", (req, res) => {
         return;
     }
 
+    if (campoEditar.length === 0){
+        res.redirect ("/buscarProducto");
+        
+        return;
+    }
+
     res.render ("puntoVentaEditarInventario", {titulo: "Editar Inventario", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: "", campoEditarP: campoEditar});
+})
+.post ("/puntoVentaEditarInventario", (req, res) => {
+    const nuevoValor = req.body.nuevoValor;
+
+    if (campoEditar === "precio") {
+        conexion.query (`UPDATE productos SET precio=${nuevoValor} WHERE id_producto=${idEditar};`)
+    }
+    else if (campoEditar === "existencia") {
+        conexion.query (`UPDATE productos SET existencia=${nuevoValor} WHERE id_producto=${idEditar};`)
+    }
+    else if (campoEditar === "nombre") {
+        nuevoValor.toLowerCase ();
+        conexion.query (`UPDATE productos SET ${campoEditar}="${nuevoValor}" WHERE id_producto=${idEditar};`)
+    }
+    else {
+        conexion.query (`UPDATE productos SET ${campoEditar}="${nuevoValor}" WHERE id_producto=${idEditar};`)
+    }
+
+    campoEditar = "";
+    idEditar = "";
+
+    res.redirect ("/puntoVentaMenu");
+});
+
+app.get ("/buscarProducto", (req, res) => {
+    if (!sesionIniciada) {
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("buscarProducto", {titulo: "Buscar Producto", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
+})
+.post ("/buscarProducto", (req, res) => {
+    const producto = req.body.producto.toLowerCase ();
+
+    conexion.query (`SELECT * FROM productos WHERE nombre="${producto}";`, (err, datos) => {
+        if (err) throw err;
+
+        if (datos.length === 0) {
+            res.render ("buscarProducto", {titulo: "Buscar Producto", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "No se encontro el producto."});
+
+            return;
+        }
+
+        idEditar = datos[0].id_producto;
+        res.redirect ("/seleccionarCampoProducto");
+    });
+
+});
+
+app.get ("/seleccionarCampoProducto", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("seleccionarCampoProducto", {titulo: "Seleccionar Campo", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
+})
+.post ("/seleccionarCampoProducto", (req, res) => {
+    campoEditar = req.body.campoEditar;
+
+    res.redirect ("/puntoVentaEditarInventario");
 });
 
 // Ruta puntoVentaInventario
@@ -718,11 +820,20 @@ app.get ("/puntoVentaInventario", (req, res) => {
         return;
     }
 
-    res.render ("puntoVentaInventario", {titulo: "Inventario", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
+    conexion.query (`SELECT * FROM productos;`, (err, datos) => {
+        if (err) throw err;
+
+        for (let index = 0; index < datos.length; index++){
+            datos[index].nombre = capitalizar (datos[index].nombre);
+        }
+
+        res.render ("puntoVentaInventario", {titulo: "Inventario", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", resultados:datos});
+    });
+
 })
 .post ("/puntoVentaInventario", (req, res) => {
-    //
+    res.redirect ("/puntoVentaMenu");
 });
 
 // Ruta reporteVentas
