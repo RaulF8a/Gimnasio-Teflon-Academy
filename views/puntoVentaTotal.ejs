@@ -1,5 +1,57 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
 
+<script>
+    function validate(input) {
+        let validityState_object = input.validity;
 
+        if (validityState_object.patternMismatch) {
+            input.setCustomValidity('Entrada no valida.');
+        } 
+        else {
+            input.setCustomValidity('');
+        }
+    }
+</script>
+
+<div class="box">
+    <% carritoCompras.forEach ((element) => { %> 
+        <div class="item">
+            <p class="carritoParrafo"><%= element.nombre %> - $<%= element.precio %></p>
+            <input type="number" name="cantidad" class="cantidadInput" min="0" value="<%= element.cantidad %>" disabled
+            style="text-align:center;">
+        </div>
+    <% }); %> 
+
+    <div class="item">
+        <p class="carritoParrafo" style="font-weight: bold;">Total: $<%= totalCuenta %></p>
+    </div>
+
+</div>
+
+<div style="text-align: center; padding-top: 15px">
+    <form action="/puntoVentaTotal" method="post">
+        <input type="hidden" name="total" value="<%= totalCuenta %>" class="total">
+        <input type="text" name="montoPagado" pattern="[0-9]{1,5}" onsubmit="validate (this)" 
+        placeholder="Digita la cantidad pagada"/>
+        <button type="submit" class="btn btn-dark">Calcular Cambio</button>
+    </form>
+</div>
+
+<% if (cambio >= 0) { %>
+    <div style="text-align: center; padding-top: 30px">
+        <p style="font-weight: bold; font-size: 20px;">El cambio a entregar es: $<%= cambio %></p>   
+    </div>
+
+    <div style="text-align: center; padding-top: 15px">
+        <form action="/guardarCuenta" method="post">
+            <input type="hidden" name="total" value="<%= totalCuenta %>" class="total">
+            <button type="submit" class="btn btn-danger">Terminar</button>
+        </form>
+    </div>
+<% } else if (cambio != -0.0000001){ %>
+    <div style="text-align: center; padding-top: 30px">
+        <p style="font-weight: bold; font-size: 20px;">La cantidad pagada no es suficiente.</p>   
+    </div>
+<% } %>
 
 <%- include ('partials/footer.ejs') -%> 

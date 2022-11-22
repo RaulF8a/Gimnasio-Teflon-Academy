@@ -1,8 +1,51 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
     
+    <script>
+        function validate(input) {
+            let validityState_object = input.validity;
+
+            if (validityState_object.patternMismatch) {
+                input.setCustomValidity('Entrada no valida.');
+            } 
+            else {
+                input.setCustomValidity('');
+            }
+        }
+    </script>
+
+
+    <div class="box">
+        <% carritoCompras.forEach ((element) => { %> 
+        <div class="item">
+            <form action="/borrarProducto" method="post">
+                <input type="checkbox" onchange="this.form.submit ()" name="checkbox" value="<%= element.nombre %>">
+            </form>
+            
+            <p class="carritoParrafo"><%= element.nombre %> - $<%= element.precio %></p>
+
+            <form action="/modificarCantidad" method="post">
+                <input type="hidden" name="producto" value="<%= element.nombre %>">
+                <input type="number" name="cantidad" class="cantidadInput" min="1" value="<%= element.cantidad %>"
+                onchange="this.form.submit ()">
+            </form>
+        </div>
+        <% }); %> 
+
+        <form action="/puntoVentaCarrito" method="post" class="item">
+            <input type="text" name="newItem" placeholder="Agregar al Carrito" class="inputCarrito" onsubmit="validate (this)">
+            <button type="submit" name="list" class="buttonCarrito">+</button>
+        </form>
+    </div>
+
     <div style="text-align: center; padding-top: 21px">
+        <form action="/puntoVentaTotal" method="get">
+            <button type="submit" class="btn btn-dark">Calcular Total</button>
+        </form>
+    </div>
+
+    <div style="text-align: center; padding-top: 42px">
         <!-- Rellenar dinamicamente con mensaje de error -->
-        <p><%= mensajeError %> </p>
+        <p> <%= mensajeError %> </p>
     </div>
 
 <%- include ('partials/footer.ejs') -%> 

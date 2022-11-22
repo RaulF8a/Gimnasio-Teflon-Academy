@@ -1,36 +1,52 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
 
-<div class="justify-content-center align-items-center h-100">
-    <div>
-        <form action="/eliminarInventario" method="post">
-            <h2 class="fw-bold mb-2 eliminarFormTitulo">Eliminar del inventario</h2>
+    <script>
+        function validate(input) {
+            let validityState_object = input.validity;
 
-            <div class="row" style="text-align: center;">
-                <div class="col-sm">
+            if (validityState_object.patternMismatch) {
+                input.setCustomValidity('La entrada no es valida.');
+            } 
+            else {
+                input.setCustomValidity('');
+            }
+        }
+    </script>
+
+    <div class="justify-content-center align-items-center h-100">
+        <div>
+            <form action="/puntoVentaEliminarInventario" method="post">
+                <h2 class="fw-bold mb-2 eliminarFormTitulo">Eliminar del Inventario</h2>
+
+                <div class="row" style="text-align: center;">
+                    <div class="col-sm">
+                    </div>
+
+                    <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
+                        <label class="form-label fw-bold" for="nombre">Nombre del Producto</label>
+                        <input
+                            id="nombre"
+                            name="nombre"
+                            class="form-control"
+                            pattern="^[A-Za-z0-9\s]{1,90}$"
+                            onsubmit="validate (this)"
+                        />
+                    </div>
+
+                    <div class="col-sm">
+                    </div>
                 </div>
 
-                <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
-                    <label class="form-label fw-bold" for="digitarID">ID</label>
-                    <input
-                        id="digitarID"
-                        class="form-control"
-                    />
+                <div style="text-align:center; margin-top: 50px;">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
                 </div>
+            </form>
+        </div>
 
-                <div class="col-sm">
-                </div>
-            </div>
-
-            <div style="text-align:center; margin-top: 50px;">
-                <button type="submit" class="btn btn-danger">Eliminar</button>
-            </div>
-        </form>
+        <div style="text-align:center; padding-top: 120px;">
+            <p> <%= mensajeError %> </p>
+        </div>
     </div>
-
-    <div style="text-align:center; padding-top: 120px;">
-        <p> <%= mensajeError %> </p>
-    </div>
-</div>
 
 
 <%- include ('partials/footer.ejs') -%> 

@@ -10,18 +10,18 @@ const app = express ();
 const __dirname = path.resolve ();
 
 // Conexion a la base de datos.
-// let conexion = mysql2.createConnection ({
-//     host: "localhost",
-//     user: "root",
-//     password: process.env.DB_PASSWORD,
-//     database: "pruebas"
-// });
+let conexion = mysql2.createConnection ({
+    host: "localhost",
+    user: "root",
+    password: process.env.DB_PASSWORD,
+    database: "Gimnasio_Teflon_Ac"
+});
 
-// conexion.connect ((err) => {
-//     if (err) throw err;
+conexion.connect ((err) => {
+    if (err) throw err;
     
-//     console.log ("Conexion exitosa.");
-// });
+    console.log ("Conexion exitosa.");
+});
 
 // Configuraciones de aplicacion.
 app.use (bodyParser.urlencoded ({extended: true}));
@@ -46,6 +46,9 @@ let atletaBuscado = {
     puesto:"" 
 };
 let carrito = [];
+// carrito.push ({nombre:"Agua", precio:"10.00", cantidad:"1"});
+// carrito.push ({nombre:"Gatumadre", precio:"43.00", cantidad:"1"});
+// carrito.push ({nombre:"Maruchan", precio:"23.65", cantidad:"1"});
 let sesionIniciada = false;
 let campoEditar = "";
 
@@ -94,6 +97,49 @@ function validarFecha (fechaNacimiento, fechaActual){
     return true;
 }
 
+function eliminarProductoEnCarrito (nombreProducto) {
+    for (let index = 0; index < carrito.length; index++) {
+        if (carrito[index].nombre === nombreProducto){
+            carrito.splice (index, 1);
+        }
+    }
+}
+
+function generarNumeroCuenta () {
+    const letras = ["A", "B", "C", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+    const numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    let id = "";
+    let random;
+
+    // Generar letras
+    for (let index = 0; index < 2; index++) {
+        random = Math.floor(Math.random() * (25 - 0)) + 0;
+        id = id+letras[random];
+    }
+
+    id += "-";
+
+    for (let index = 0; index < 4; index++) {
+        random = Math.floor(Math.random() * (10 - 0)) + 0;
+        id = id+numeros[random];
+    }
+
+    return id;
+}
+
+function obtenerFecha () {
+    let fecha = new Date ().getFullYear ().toString () + "-";
+    fecha += ((new Date ().getMonth ()) + 1).toString ();
+    fecha += "-"
+    fecha += (new Date ().getDate ()).toString ();
+
+    return fecha;
+}
+
+function capitalizar (cadena) {
+    return cadena.charAt(0).toUpperCase() + cadena.slice(1);
+}
+
 // Ruta Home
 app.get ("/", (req, res) => {
     res.render ("home", {titulo: "Gimnasio Teflon Academy", usuario: usuarioSesionIniciada.nombre, 
@@ -140,9 +186,9 @@ app.get ("/login", (req, res) => {
             return;
         } 
 
-        conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosE) =>{
+        conexion.query (`SELECT * FROM gimnasio_teflon_ac.personal WHERE id="${usuario}"`, (err, datosE) =>{
             if (!datos){
-                conexion.query (`SELECT * FROM pruebas.empleado WHERE id="${usuario}"`, (err, datosA) => {
+                conexion.query (`SELECT * FROM gimnasio_teflon_ac.personal WHERE id="${usuario}"`, (err, datosA) => {
                     usuarioSesionIniciada.id = datosA[0].id;
                     usuarioSesionIniciada.nombre = datosA[0].nombre;
                     usuarioSesionIniciada.puesto = datosA[0].puesto;
@@ -168,15 +214,6 @@ app.get ("/logout", (req, res) => {
     usuarioSesionIniciada.puesto = "";
 
     res.redirect ("/");
-});
-
-// Ruta seleccionServicio
-app.get ("/seleccionServicio", (req, res) => {
-    res.render ("seleccionServicio", {titulo: "Seleccionar Servicio", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
-})
-.post ("/seleccionServicio", (req, res) => {
-    //
 });
 
 // Ruta menuPrincipal
@@ -397,12 +434,13 @@ app.get ("/registrarEmpleado", (req, res) => {
     const curp = req.body.curp;
     const sueldo = req.body.sueldo;
     const fechaN = req.body.fechaNacimiento;
+    const telefono = req.body.telefono;
     const rfc = req.body.rfc;
     const escolaridad = req.body.escolaridad;
     const puesto = req.body.puesto;
 
-    conexion.query ("INSERT INTO empleado SET ?", {id:id, nombre:nombre, curp:curp, sueldo:sueldo, fechaNacimiento:fechaN, 
-    rfc:rfc, escolaridad:escolaridad, puesto:puesto}, (err, results) => {
+    conexion.query ("INSERT INTO personal SET ?", {id:id, nombre:nombre, curp:curp, sueldo:sueldo, fechaNacimiento:fechaN, 
+    rfc:rfc, escolaridad:escolaridad, telefono:telefono, puesto:puesto}, (err, results) => {
         if (err){
             // console.log (err);
             res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
@@ -458,12 +496,147 @@ app.get ("/puntoVentaMenu", (req, res) => {
 
         return;
     }
-
+    
     res.render ("puntoVentaMenu", {titulo: "Punto de Venta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/puntoVentaMenu", (req, res) => {
     //
+});
+
+// Ruta puntoVentaCarrito
+app.get ("/puntoVentaCarrito", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+    
+    res.render ("puntoVentaCarrito", {titulo: "Carrito", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito});
+})
+.post ("/puntoVentaCarrito", (req, res) => {
+    // Arreglo de JSON con {nombre, precio}
+    const productoBuscado = req.body.newItem.toLowerCase ();
+
+    conexion.query (`SELECT * FROM productos WHERE nombre="${productoBuscado}"`, (err, results) => {
+        if (err) throw err;
+
+        if (results.length === 0){
+            res.render ("puntoVentaCarrito", {titulo: "Carrito", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "No se encontro el producto.", carritoCompras:carrito});
+
+            return;
+        }
+
+        let producto = {nombre:results[0].nombre, precio:results[0].precio.toString (), cantidad:"1"}
+        carrito.push (producto);
+
+        res.redirect ("/puntoVentaCarrito");
+    });
+    
+});
+
+app.post ("/borrarProducto", (req, res) => {
+    const nombreProducto = req.body.checkbox;
+   
+    eliminarProductoEnCarrito (nombreProducto);
+
+    res.redirect ("/puntoVentaCarrito");
+});
+
+app.post ("/modificarCantidad", (req, res) => {
+    const nuevoValor = req.body.cantidad;
+    const productoModificado = req.body.producto;
+
+    for (let index = 0; index < carrito.length; index++){
+        if (carrito[index].nombre === productoModificado) {
+            carrito[index].cantidad = nuevoValor;
+        }
+    }
+
+    res.redirect ("/puntoVentaCarrito");
+});
+
+// Ruta puntoVentaTotal
+app.get ("/puntoVentaTotal", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    let total = 0;
+
+    for (let index = 0; index < carrito.length; index++){
+        total += (parseFloat (carrito[index].precio) * parseInt (carrito[index].cantidad));
+    }
+
+    total = total.toFixed (2);
+
+    res.render ("puntoVentaTotal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:-0.0000001});
+})
+.post ("/puntoVentaTotal", (req, res) => {
+    const total = req.body.total;
+    const montoPagado = req.body.montoPagado;
+
+    let cambio = montoPagado - total;
+    cambio = cambio.toFixed (2);
+
+    res.render ("puntoVentaTotal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:cambio});
+});
+
+app.post ("/guardarCuenta", (req, res) => {
+    const total = req.body.total;
+    let numeroCuenta = generarNumeroCuenta ();
+    let nuevaExistencia = 0;
+    let fecha = obtenerFecha ();
+    let cantidadComprada;
+    let productoActual;
+    let totalProductoActual;
+
+    console.log (numeroCuenta);
+
+    // Actualizar la existencia.
+    for (let index = 0; index < carrito.length; index++){
+        cantidadComprada = parseInt (carrito[index].cantidad);
+        productoActual = carrito[index].nombre;
+
+        conexion.query (`SELECT existencia FROM productos WHERE nombre="${productoActual}"`, (err, datos) => {
+            if (err) throw err;
+
+            nuevaExistencia = datos[0].existencia - cantidadComprada;
+            conexion.query (`UPDATE productos SET existencia=${nuevaExistencia} WHERE nombre="${productoActual}"`);
+        });
+
+    }
+
+    // Crear una cuenta.
+    conexion.query (`INSERT INTO venta SET ?`, {id_venta:numeroCuenta, fecha:fecha, total:total, 
+    cantidadProductos:carrito.length});
+
+    // Crear el reporte de venta.
+    for (let index = 0; index < carrito.length; index++){
+        productoActual = carrito[index].nombre;
+        cantidadComprada = parseInt (carrito[index].cantidad);
+        totalProductoActual = parseFloat (carrito[index].precio) * cantidadComprada;
+
+        console.log (productoActual);
+        console.log (cantidadComprada);
+        console.log (totalProductoActual);
+
+        conexion.query (`SELECT id_producto FROM productos WHERE nombre="${productoActual}"`, (err, datos) => {
+            if (err) throw err;
+
+            conexion.query (`INSERT INTO detalle_venta SET ?`, {id_producto:datos[0].id_producto, cantidad:cantidadComprada,
+            total:totalProductoActual, id_venta:numeroCuenta});
+        });
+    }
+
+    carrito = [];
+    res.redirect ("/puntoVentaMenu");
 });
 
 // Ruta puntoVentaAñadirInventario
@@ -478,24 +651,24 @@ app.get ("/puntoVentaAnadirInventario", (req, res) => {
     login: false, sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/puntoVentaAnadirInventario", (req, res) => {
-    //
-});
+    const nombreProducto = req.body.nombre.toLowerCase ();
+    const descripcion = req.body.descripcion;
+    const precio = parseFloat (req.body.precio);
+    const existencia = parseInt (req.body.existencia);
 
-// Ruta puntoVentaCarrito
-app.get ("/puntoVentaCarrito", (req, res) => {
-    if (!sesionIniciada){
-        res.redirect ("/login");
+    conexion.query (`INSERT INTO productos SET ?`, {nombre:nombreProducto, descripcion: descripcion, precio:precio,
+    existencia:existencia}, (err) => {
+        if (err){
+            console.error (err);
 
-        return;
-    }
+            res.render ("puntoVentaAnadirInventario", {titulo: "Añadir al Inventario", usuario: usuarioSesionIniciada.nombre, 
+            login: false, sesion: sesionIniciada, mensajeError: "Ocurrio un error. Intentalo de nuevo."});
+            
+            return;
+        }
+    });
 
-    res.render ("puntoVentaCarrito", {titulo: "Carrito", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
-})
-.post ("/puntoVentaCarrito", (req, res) => {
-    // Arreglo de JSON con {nombre, precio}
-    
-    // Si la compra fue exitosa, se debe limpiar el carrito.
+    res.redirect ("/puntoVentaMenu");
 });
 
 // Ruta puntoVentaEliminarInventario
@@ -510,7 +683,31 @@ app.get ("/puntoVentaEliminarInventario", (req, res) => {
     login: false, sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/puntoVentaEliminarInventario", (req, res) => {
-    //
+    const nombreProducto = req.body.nombre.toLowerCase ();
+
+    conexion.query (`DELETE FROM productos WHERE nombre="${nombreProducto}"`, (err) => {
+        if (err){
+            console.error (err);
+
+            res.render ("puntoVentaEliminarInventario", {titulo: "Eliminar del Inventario", usuario: usuarioSesionIniciada.nombre, 
+            login: false, sesion: sesionIniciada, mensajeError: "Ocurrio un error. Intentalo de nuevo."});
+
+            return;
+        }
+    });
+
+    res.redirect ("/puntoVentaMenu");
+});
+
+app.get ("/puntoVentaEditarInventario", (req, res) => {
+    if (!sesionIniciada) {
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("puntoVentaEditarInventario", {titulo: "Editar Inventario", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
 });
 
 // Ruta puntoVentaInventario
@@ -525,21 +722,6 @@ app.get ("/puntoVentaInventario", (req, res) => {
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/puntoVentaInventario", (req, res) => {
-    //
-});
-
-// Ruta puntoVentaTotal
-app.get ("/puntoVentaTotal", (req, res) => {
-    if (!sesionIniciada){
-        res.redirect ("/login");
-
-        return;
-    }
-
-    res.render ("puntoVentaToatal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
-})
-.post ("/puntoVentaTotal", (req, res) => {
     //
 });
 

@@ -1,4 +1,59 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
 
+    <script>
+        function validate(input) {
+            let validityState_object = input.validity;
+
+            if (validityState_object.patternMismatch) {
+                input.setCustomValidity('La entrada no es valida.');
+            } 
+            else {
+                input.setCustomValidity('');
+            }
+        }
+    </script>
+
+    <div class="justify-content-center align-items-center h-100">
+        <div>
+            <form action="/puntoVentaAnadirInventario" method="post">
+                <h2 class="fw-bold mb-2 registrarAtletaFormTitulo">Agregar Producto</h2>
+
+                <div class="row" style="text-align: center">
+                    <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
+                        <label class="form-label fw-bold" for="nombre">Nombre</label>
+                        <input id="nombre" name="nombre" class="form-control" pattern="^[A-Za-z0-9\s]{1,90}$"
+                        onsubmit="validate (this)"/>
+                    </div>
+                    <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
+                        <label class="form-label fw-bold" for="descripcion">Descripcion</label>
+                        <input id="descripcion" name="descripcion" class="form-control" pattern="^[A-Za-z0-9\s]{1,80}$"
+                        onsubmit="validate (this)" />
+                    </div>
+                </div>
+
+                <div class="row" style="text-align: center">
+                    <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
+                        <label class="form-label fw-bold" for="precio">Precio</label>
+                        <input id="precio" class="form-control" name="precio" pattern="^[0-9]{0,9}\.{0,1}[0-9]{1,9}$"
+                        onsubmit="validate (this)"/>
+                    </div>
+                    <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
+                        <label class="form-label fw-bold" for="existencia">Existencia</label>
+                        <input id="existencia" name="existencia" class="form-control" pattern="^[0-9]{1,9}$"
+                        onsubmit="validate (this)" />
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 25px">
+                    <button type="submit" class="btn btn-dark">Agregar</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="text-align:center; padding-top: 120px;">
+            <p> <%= mensajeError %> </p>
+        </div>
+    </div>
+
 
 <%- include ('partials/footer.ejs') -%> 

@@ -85,7 +85,15 @@ login, sesion: sesion}) -%>
 
                 <!-- Tercera Fila -->
                 <div class="row" style="text-align: center">
-                    <div class="col-sm">
+                    <div class="form-outline form-white mb-4 col-sm registrarEmpleadoFormInput">
+                        <label class="form-label fw-bold" for="telefono">Telefono</label>
+                        <input
+                            id="telefono"
+                            name="telefono"
+                            class="form-control"
+                            pattern="\+{0,1}[0-9]{10,12}"
+                            onsubmit="validate (this)"
+                        />
                     </div>
 
                     <div class="form-outline form-white mb-4 col-sm registrarEmpleadoFormInput">
@@ -96,9 +104,6 @@ login, sesion: sesion}) -%>
                             <option value="Auxiliar Administrativo">Auxiliar Administrativo</option>
                             <option value="Administrativo">Administrativo</option>
                         </select>
-                    </div>
-
-                    <div class="col-sm">
                     </div>
                 </div>
 
