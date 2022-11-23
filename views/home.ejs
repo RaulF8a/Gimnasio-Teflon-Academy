@@ -1,5 +1,46 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%> 
-    <!--<div class="img">
+
+<style>
+    .img {
+        background-image: url("images/login2.png"), url("images/login3.png");
+        background-repeat: no-repeat;
+        background-position: 900px 135px, 420px 70px;
+        background-size: 200px, 230px;
+    }
+    
+    .text {
+        text-align: right;
+        text-transform: capitalize;
+        border-bottom-style: initial;
+        border-radius: 50px;
+        border-color: aquamarine;
+        text-size-adjust: 1px;
+    }
+
+    .imgs {
+        background-position: 80px 30px;
+    }
+/*
+.color {
+background-image: linear-gradient(#e66465, #9198e5);
+width: 100px;
+height: 800px;
+left: 0px;
+top: 0px;
+}*/
+</style>
+
+<div class="img">
+    <img src="images/login.png">
+</div>
+ 
+<div class="text">
+    <h1 class="text">
+        Bienvenido a Gimnasio Teflon Academy
+    </h1>
+</div>
+
+<!--<div class="img">
         <img src="images/imagen.png" alt="">
     </div>-->
 <%- include ('partials/footer.ejs') -%> 

@@ -10,7 +10,7 @@ const app = express ();
 const __dirname = path.resolve ();
 
 // Conexion a la base de datos.
-let conexion = mysql2.createConnection ({
+/*let conexion = mysql2.createConnection ({
     host: "localhost",
     user: "root",
     password: process.env.DB_PASSWORD,
@@ -21,7 +21,7 @@ conexion.connect ((err) => {
     if (err) throw err;
     
     console.log ("Conexion exitosa.");
-});
+});*/
 
 // Configuraciones de aplicacion.
 app.use (bodyParser.urlencoded ({extended: true}));
