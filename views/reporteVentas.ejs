@@ -1,5 +1,69 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Reporte de ventas mensual</title>
+    <link href="tablas.css" rel="stylesheet" type="text/css">
+    <style>
+    </style>
+  </head>
+  <body>
+    <h1>Reporte de ventas</h1>
 
+      <table>
+        <caption>Mes</caption>
+          <tr>
+            <th>Semana</th>
+            <th>Ganancia de membresias</th>
+            <th>Ganancia de productos</th>
+            <th>Compra de productos</th>
+            <th>Sueldo de empleados (€)</th>
+            <th>Mantenimiento</th>
+            <th>Balance de ingresos y egresos</th>
+            
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>118</td>
+            <td>12/09</td>
+            <td>Great idea</td>
+            <td>30</td>
+            <td>30</td>
+            <td>30</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Hairdresser</td>
+            <td>12/09</td>
+            <td>Great idea</td>
+            <td>30</td>
+            <td>30</td>
+            <td>30</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Restaurant</td>
+            <td>12/09</td>
+            <td>Regrets</td>
+            <td>18</td>
+            <td>30</td>
+            <td>30</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Shoeshop</td>
+            <td>13/09</td>
+            <td>Big regrets</td>
+            <td>65</td>
+            <td>30</td>
+            <td>30</td>
+          </tr>
+
+    </table>
+
+  </body>
+</html>
 
 
 <%- include ('partials/footer.ejs') -%> 
