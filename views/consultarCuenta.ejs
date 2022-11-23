@@ -1,0 +1,54 @@
+<%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+
+<div class="justify-content-center align-items-center h-100">
+    <h2 class="fw-bold mb-2 menuPrincipalTitulo" style="text-align: center">
+        Cuenta <%= cuenta.id %>
+    </h2>
+    <h5 class="mb-2" style="text-align: center; padding-top: 20px;">
+        Fecha: <%= cuenta.fecha %>
+    </h5>
+    <div class="row tablaResumen" style="text-align: center;">
+        <div class="col">
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">ID del Producto</th>
+                        <th scope="col">Nombre del Producto</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% resultados.forEach ((element) => { %>
+                        <tr class="table-secondary">
+                            <th scope="row"><%= element.id_producto %> </th> 
+                            <td><%= capitalizar (element.nombre) %> </td> 
+                            <td><%= element.cantidad %> </td> 
+                            <td>$<%= element.total %> </td> 
+                        </tr>
+                    <% }); %>
+                        
+                    <tr class="table-secondary">
+                        <th scope="row"></th> 
+                        <td></td> 
+                        <td></td> 
+                        <td style="font-weight: bold;">$<%= cuenta.total %> </td> 
+                    </tr>
+                    
+                  </tbody>
+            </table>
+        </div>
+
+        
+    </div>   
+
+    <div class="row" style="text-align: center; padding-top: 50px;">
+        <div class="col">
+            <form action="/consultarCuenta" method="post">
+                <button type="submit" class="btn btn-dark">Regresar al Menú</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include ('partials/footer.ejs') -%> 

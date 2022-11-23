@@ -46,12 +46,10 @@ let atletaBuscado = {
     puesto:"" 
 };
 let carrito = [];
-// carrito.push ({nombre:"Agua", precio:"10.00", cantidad:"1"});
-// carrito.push ({nombre:"Gatumadre", precio:"43.00", cantidad:"1"});
-// carrito.push ({nombre:"Maruchan", precio:"23.65", cantidad:"1"});
 let sesionIniciada = false;
 let campoEditar = "";
 let idEditar = "";
+let cuentaBuscada = {};
 
 // Generar ID de usuario.
 function generarID () {
@@ -836,6 +834,67 @@ app.get ("/puntoVentaInventario", (req, res) => {
     res.redirect ("/puntoVentaMenu");
 });
 
+app.get ("/menuFinanzas", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("menuFinanzas", {titulo: "Menú de Finanzas", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
+});
+
+app.get ("/buscarCuenta", (req, res) => {
+    if (!sesionIniciada) {
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("buscarCuenta", {titulo: "Buscar Producto", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
+})
+.post ("/buscarCuenta", (req, res) => {
+    const id = req.body.cuenta;
+
+    conexion.query (`SELECT * FROM venta WHERE id_venta="${id}"`, (err, datos) => {
+        if (err) throw err;
+
+        if (datos.length === 0) {
+            res.render ("buscarCuenta", {titulo: "Buscar Producto", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "No se encontro la cuenta."});
+
+            return;
+        }
+
+        cuentaBuscada = {id:datos[0].id_venta, fecha:datos[0].fecha, total:datos[0].total, 
+        cantidadProductos:datos[0].cantidadProductos};
+        res.redirect ("/consultarCuenta");
+    });
+});
+
+app.get ("/consultarCuenta", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    conexion.query (`SELECT detalle_venta.id_producto, productos.nombre, detalle_venta.cantidad, detalle_venta.total 
+    FROM detalle_venta INNER JOIN productos ON detalle_venta.id_producto = productos.id_producto 
+    AND id_venta="${cuentaBuscada.id}";`, (err, datos) => {
+        if (err) throw err;
+
+        res.render ("consultarCuenta", {titulo: "Consultar Cuenta", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", resultados:datos, cuenta:cuentaBuscada, capitalizar:capitalizar});
+    });
+})
+.post ("/consultarCuenta", (req, res) => {
+    cuentaBuscada = {};
+    res.redirect ("/menuFinanzas");
+});
+
 // Ruta reporteVentas
 app.get ("/reporteVentas", (req, res) => {
     if (!sesionIniciada){
@@ -844,11 +903,22 @@ app.get ("/reporteVentas", (req, res) => {
         return;
     }
 
-    res.render ("reporteVentas", {titulo: "Reporte de Ventas", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
+    conexion.query (`SELECT * FROM venta;`, (err, datos) => {
+        if (err) throw err;
+
+        if (datos.length === 0){
+            res.redirect ("/menuFinanzas");
+
+            return;
+        }
+
+        res.render ("reporteVentas", {titulo: "Reporte de Ventas", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", resultados:datos, totalMes:0, mes:0});
+    });
+
 })
 .post ("/reporteVentas", (req, res) => {
-    //
+    res.redirect ("/menuFinanzas");
 });
 
 app.listen (process.env.PORT || 3000, () => {
