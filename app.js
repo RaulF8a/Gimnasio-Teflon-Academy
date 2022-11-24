@@ -474,7 +474,7 @@ app.get ("/editarEmpleado", (req, res) => {
     }
 
     res.render ("editarEmpleado", {titulo: "Editar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
+    sesion: sesionIniciada, mensajeError: "", campEditar: campoEditar});
 })
 .post ("/editarEmpleado", (req, res) => {
     //
