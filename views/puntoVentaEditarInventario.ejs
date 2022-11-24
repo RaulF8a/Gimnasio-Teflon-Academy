@@ -17,26 +17,29 @@
 <div class="justify-content-center align-items-center h-100">
     <div>
         <form action="/puntoVentaEditarInventario" method="post">
-            <h2 class="fw-bold mb-2 eliminarFormTitulo">Editar <%= campoEditarP[0].toUpperCase() + campoEditarP.slice(1)  %></h2>
+            <h2 class="fw-bold mb-2 eliminarFormTitulo">Editar Campo</h2>
             
                 <div class="row" style="text-align: center">
                     <div class="col-sm"></div>
             
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
-                        <label class="form-label fw-bold" for="nuevoValor">Nuevo Valor</label>
                         <% if (campoEditarP === "nombre") { %>
+                            <label class="form-label fw-bold" for="nuevoValor">Nombre</label>
                             <input id="nombre" name="nuevoValor" class="form-control" type="text"
                             pattern="^[A-Za-z0-9\s]{1,90}$" onsubmit="validate (this)"/>
 
                         <% } else if (campoEditarP === "descripcion") { %>
+                            <label class="form-label fw-bold" for="nuevoValor">Descripción</label>
                             <input id="descripcion" name="nuevoValor" class="form-control" pattern="^[A-Za-z0-9\s]{1,80}$"
                             onsubmit="validate (this)" />
 
                         <% } else if (campoEditarP === "precio") { %>
+                            <label class="form-label fw-bold" for="nuevoValor">Precio</label>
                             <input id="precio" name="nuevoValor" class="form-control" pattern="^[0-9]{1,4}\.{0,1}[0-9]{1,10}$"
                             onsubmit="validate (this)" />
                             
                         <% } else { %>
+                            <label class="form-label fw-bold" for="nuevoValor">Existencia</label>
                             <input id="existencia" name="nuevoValor" class="form-control" pattern="^[0-9]{1,9}$"
                             onsubmit="validate (this)"/>
                         <% } %>

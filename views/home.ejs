@@ -2,7 +2,6 @@
 
 <style>
     .img {
-        background-image: url("images/login2.png"), url("images/login3.png");
         background-repeat: no-repeat;
         background-position: 900px 135px, 420px 70px;
         background-size: 200px, 230px;
@@ -10,7 +9,7 @@
     
     .text {
         text-align: right;
-        text-transform: capitalize;
+        /* text-transform: capitalize; */
         border-bottom-style: initial;
         border-radius: 50px;
         border-color: aquamarine;
@@ -34,13 +33,17 @@ top: 0px;
     <img src="images/login.png">
 </div>
  
-<div class="text">
-    <h1 class="text">
+<div>
+    <h1 class="text tituloHome">
         Bienvenido a Gimnasio Teflon Academy
     </h1>
+    
+    <div style="text-align: center;">
+        <form action="/home" method="post">
+            <button type="submit" class="btn btn-dark btn-lg">Acceso</button>
+        </form>
+    </div>
 </div>
 
-<!--<div class="img">
-        <img src="images/imagen.png" alt="">
-    </div>-->
+
 <%- include ('partials/footer.ejs') -%> 

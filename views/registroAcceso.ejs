@@ -1,22 +1,53 @@
 <%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
-<div class="container text-center">
-    <div class="row mb-4">
-      <div class="col">
-        <h2 class="fw-bold mb-2 contraseniaFormTitulo">Accede al servicio</h2>
-      </div>
-    </div>
-    <div class="row justify-content-center mt-5">
-        <div class="col-2">
-            <div class="d-grid gap-2">
-                <a class="btn btn-secondary" href="/puntoVentaMenu" role="button">Punto de Venta</a>
+
+<script>
+  function validate(input) {
+      let validityState_object = input.validity;
+
+      if (validityState_object.patternMismatch) {
+          input.setCustomValidity('Entrada no valida.');
+      } 
+      else {
+          input.setCustomValidity('');
+      }
+  }
+</script>
+
+<div class="justify-content-center align-items-center h-100">
+  <div>
+      <form action="/registroAcceso" method="post">
+          <h2 class="fw-bold mb-2 eliminarFormTitulo">Registrar Visita</h2>
+      
+          <div class="row" style="text-align: center;">
+              <div class="col-sm">
               </div>
-        </div>
-        <div class="col-2">
-            <div class="d-grid gap-2">
-                <a class="btn btn-secondary" href="/gym" role="button">Gym</a>
+
+              <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
+                  <label class="form-label fw-bold" for="digitarID">ID</label>
+                  <input
+                      id="digitarID"
+                      name="id"
+                      class="form-control"
+                      pattern="^[a-zA-Z0-9]{10}$"
+                      onsubmit="validate(this)"
+                  />
               </div>
-        </div>
-    </div>
+
+              <div class="col-sm">
+              </div>
+          </div>
+
+          <div style="text-align:center; margin-top: 30px;">
+              <button type="submit" class="btn btn-success">Registrar</button>
+          </div>
+
+      </form>
   </div>
+
+  <div style="text-align: center; padding-top: 120px">
+      <!-- Rellenar dinamicamente con mensaje de error -->
+      <p> <%= mensajeError %> </p>
+  </div>
+</div>
 
 <%- include ('partials/footer.ejs') -%> 

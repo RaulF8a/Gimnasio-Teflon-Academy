@@ -4,13 +4,13 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import ejs from 'ejs';
 import mysql2 from 'mysql2';
-import bycryptjs from 'bcryptjs';
+import bycrypt from 'bcryptjs';
 
 const app = express ();
 const __dirname = path.resolve ();
 
 // Conexion a la base de datos.
-/*let conexion = mysql2.createConnection ({
+let conexion = mysql2.createConnection ({
     host: "localhost",
     user: "root",
     password: process.env.DB_PASSWORD,
@@ -21,7 +21,7 @@ conexion.connect ((err) => {
     if (err) throw err;
     
     console.log ("Conexion exitosa.");
-});*/
+});
 
 // Configuraciones de aplicacion.
 app.use (bodyParser.urlencoded ({extended: true}));
@@ -46,7 +46,7 @@ let atletaBuscado = {
     puesto:"" 
 };
 let carrito = [];
-let sesionIniciada = true;
+let sesionIniciada = false;
 let campoEditar = "";
 let idEditar = "";
 let cuentaBuscada = {};
@@ -135,6 +135,16 @@ function obtenerFecha () {
     return fecha;
 }
 
+function obtenerHora () {
+    let horas = new Date ().getHours ().toString ();
+    let minutos = new Date ().getMinutes ().toString ();
+    let segundos = new Date ().getSeconds ().toString ();
+
+    let hora = horas + ":" + minutos + ":" + segundos;
+
+    return hora;
+}
+
 function capitalizar (cadena) {
     let cadenaCapitalizada = cadena.split(" ");
 
@@ -156,15 +166,6 @@ app.get ("/", (req, res) => {
     //
 });
 
-// Ruta inicio
-app.get ("/inicio", (req, res) => {
-    res.render ("inicio", {titulo: "Inicio", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
-})
-.post ("/inicio", (req, res) => {
-    //
-});
-
 // Ruta login
 app.get ("/login", (req, res) => {
     res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, 
@@ -174,7 +175,7 @@ app.get ("/login", (req, res) => {
     const usuario = req.body.user;
     const pass = req.body.password;
 
-    let passCrypt = await bycryptjs.hash (pass, 8);
+    let passCrypt = await bycrypt.hash (pass, 8);
 
     if (!(usuario && pass)){
         res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, sesion: sesionIniciada, 
@@ -183,22 +184,22 @@ app.get ("/login", (req, res) => {
         return;
     }
 
-    conexion.query (`SELECT * FROM users WHERE user='${usuario}';`, (err, datos) => {
+    conexion.query (`SELECT * FROM users WHERE user='${usuario}';`, async (err, datos) => {
         if (err) throw err;
 
-        if (datos.length == 0 || !(bycryptjs.compare (passCrypt, datos[0].pass))){
+        if (datos.length === 0 || !(await bycrypt.compare (pass, datos[0].pass))){
             res.render ("login", {titulo: "Login", usuario: usuarioSesionIniciada.nombre, login: true, sesion: sesionIniciada, 
             mensajeError: "Usuario y/o contraseña incorrecto."});
 
             return;
         } 
 
-        conexion.query (`SELECT * FROM gimnasio_teflon_ac.personal WHERE id="${usuario}"`, (err, datosE) =>{
-            if (!datos){
-                conexion.query (`SELECT * FROM gimnasio_teflon_ac.personal WHERE id="${usuario}"`, (err, datosA) => {
-                    usuarioSesionIniciada.id = datosA[0].id;
-                    usuarioSesionIniciada.nombre = datosA[0].nombre;
-                    usuarioSesionIniciada.puesto = datosA[0].puesto;
+        conexion.query (`SELECT * FROM gimnasio_teflon_ac.personal WHERE id="${usuario}"`, async (err, datosE) =>{
+            if (datosE.length === 0){
+                conexion.query (`SELECT * FROM gimnasio_teflon_ac.cliente WHERE id_cliente="${usuario}"`, (err, datosA) => {
+                    usuarioSesionIniciada.id = datosA[0].id_cliente;
+                    usuarioSesionIniciada.nombre = datosA[0].nombre_cliente;
+                    usuarioSesionIniciada.puesto = "Atleta";
                 });
             }
             else{
@@ -259,7 +260,22 @@ app.get ("/registroAcceso", (req, res) => {
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/registroAcceso", (req, res) => {
-    //
+    const id = req.body.id;
+    let fechaIngreso = obtenerFecha ();
+    let horaIngreso = obtenerHora ();
+
+    conexion.query (`INSERT INTO visitas SET ?`, {id_cliente:id, fecha:fechaIngreso, hora:horaIngreso}, (err) => {
+        if (err) {
+            console.error (err);
+
+            res.render ("registroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "Ocurrio un error. Vuelve a intentarlo."});
+
+            return;
+        }
+    });
+
+    res.redirect ("/registroAcceso");
 });
 
 // Ruta verRegistroAcceso
@@ -270,11 +286,13 @@ app.get ("/verRegistroAcceso", (req, res) => {
         return;
     }
 
-    res.render ("verRegistroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
+    conexion.query (`SELECT * FROM visitas;`, (err, datos) => {
+        res.render ("verRegistroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", listaAccesos:datos});
+    });
 })
 .post ("/verRegistroAcceso", (req, res) => {
-    //
+    res.redirect ("/menuPrincipal");
 });
 
 // Ruta crearContraseña
@@ -299,7 +317,7 @@ app.get ("/crearContrasenia", (req, res) => {
         return;
     }
 
-    let passCrypt = await bycryptjs.hash (pass, 8);
+    let passCrypt = await bycrypt.hash (pass, 8);
 
     conexion.query ("INSERT INTO users SET ?", {user:usuarioRegistrado.id, pass:passCrypt, rol:usuarioRegistrado.puesto});
 
@@ -319,7 +337,54 @@ app.get ("/registrarAtleta", (req, res) => {
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/registrarAtleta", (req, res) => {
-    //
+    let fechaNacimiento = new Date (req.body.fechaNacimiento);
+    let fechaActual = new Date ();
+    let fechaValida;
+    usuarioRegistrado.id = "";
+    usuarioRegistrado.nombre = "";
+    usuarioRegistrado.puesto = "";
+
+    fechaValida = validarFecha (fechaNacimiento, fechaActual);
+
+    if (!fechaValida){
+        res.render ("registroAtleta", {titulo: "Registrar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "El gminasio no admite menores de 15 años."});
+        
+        return;
+    }
+
+    const id = generarID ();
+    const nombre = req.body.nombre;
+    const curp = req.body.curp;
+    const telefono = req.body.telefono;
+    const membresia = req.body.membresia;
+    const altura = req.body.altura;
+    const peso = req.body.peso;
+    let fechaInscripcion = obtenerFecha ();
+    fechaNacimiento = req.body.fechaNacimiento;
+
+    conexion.query (`INSERT INTO cliente SET ?`, {id_cliente:id, nombre_cliente:nombre, curp:curp, tel_cliente:telefono,
+    peso:peso, altura:altura, fecha_nacimiento:fechaNacimiento, fecha_inscripcion:fechaInscripcion, tipo_membresia:membresia},
+    (err) => {
+        if (err) {
+            console.log (err);
+
+            res.render ("registroAtleta", {titulo: "Registrar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "Ocurrio un error. Vuelve a intentarlo."});
+        
+            return;  
+        }
+        else{
+            usuarioRegistrado.id = id;
+            usuarioRegistrado.nombre = nombre;
+            usuarioRegistrado.puesto = "Atleta";
+            
+            console.log (usuarioRegistrado);
+            passRequested = true;
+            res.redirect ("/crearContrasenia");
+        }
+    });
+
 });
 
 // Ruta editarAtleta
@@ -341,7 +406,23 @@ app.get ("/editarAtleta", (req, res) => {
 })
 .post ("/editarAtleta", (req, res) => {
     // Al terminar de editar, hay que reiniciar la variable que contiene el campo.
+    const nuevoValor = req.body.nuevoValor;
+
+    if (campoEditar === "nombre_cliente" || campoEditar === "curp" || campoEditar === "tel_cliente" || 
+    campoEditar === "fecha_nacimiento" || campoEditar === "tipo_membresia"){
+        conexion.query (`UPDATE cliente SET ${campoEditar}="${nuevoValor}" WHERE id_cliente="${idEditar}";`, (err) => {
+            if (err) throw err;
+        });
+    }
+    else{
+        conexion.query (`UPDATE cliente SET ${campoEditar}=${nuevoValor} WHERE id_cliente="${idEditar}";`, (err) => {
+            if (err) throw err;
+        });
+    }
+
     campoEditar = "";
+    idEditar = "";
+    res.redirect ("/menuPrincipal");
 });
 
 // Ruta eliminarAtleta
@@ -356,7 +437,18 @@ app.get ("/eliminarAtleta", (req, res) => {
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/eliminarAtleta", (req, res) => {
-    //
+    const id = req.body.id;
+
+    conexion.query (`DELETE FROM cliente WHERE id_cliente="${id}"`, (err) => {
+        if (err) {
+            res.render ("eliminarAtleta", {titulo: "Eliminar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "Ocurrio un error. Vuelve a intentarlo."});
+
+            return;
+        }
+    });
+    
+    res.redirect ("/menuPrincipal");
 });
 
 app.get ("/seleccionarCampoAtleta", (req, res) => {
@@ -370,7 +462,6 @@ app.get ("/seleccionarCampoAtleta", (req, res) => {
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/seleccionarCampoAtleta", (req, res) => {
-
     // Redirigir a editar Atleta con el campo seleccionado.
     campoEditar = req.body.campoEditar;
     res.redirect ("/editarAtleta");
@@ -389,7 +480,22 @@ app.get ("/buscarAtleta", (req, res) => {
 })
 .post ("/buscarAtleta", (req, res) => {
     // Si se encuentra el atleta, redirigir a seleccionar campo.
-    res.redirect ("/seleccionarCampoAtleta");
+    const id = req.body.id;
+
+    conexion.query (`SELECT * FROM cliente WHERE id_cliente="${id}"`, (err, datos) => {
+        if (err) throw err;
+
+        if (datos.length === 0) {
+            res.render ("buscarAtleta", {titulo: "Buscar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "No se encontro el atleta."});
+
+            return;
+        }
+
+        idEditar = datos[0].id_cliente;
+        res.redirect ("/seleccionarCampoAtleta");
+    });
+
 });
 
 // Ruta resumen del atleta.
@@ -430,7 +536,7 @@ app.get ("/registrarEmpleado", (req, res) => {
 
     if (!fechaValida){
         res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
-        sesion: sesionIniciada, mensajeError: "La fecha no es valida"});
+        sesion: sesionIniciada, mensajeError: "La fecha de nacimiento no es válida"});
         
         return;
     }
@@ -465,6 +571,49 @@ app.get ("/registrarEmpleado", (req, res) => {
 
 });
 
+app.get ("/buscarEmpleado", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("buscarEmpleado", {titulo: "Buscar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""}); 
+})
+.post ("/buscarEmpleado", (req, res) => {
+    const id = req.body.id;
+
+    conexion.query (`SELECT * FROM personal WHERE id="${id}"`, (err, datos) => {
+        if (err) throw err;
+
+        if (datos.length === 0) {
+            res.render ("buscarEmpleado", {titulo: "Buscar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "No se encontro el empleado."});
+
+            return;
+        }
+
+        idEditar = datos[0].id;
+        res.redirect ("/seleccionarCampoEmpleado");
+    });
+});
+
+app.get ("/seleccionarCampoEmpleado", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("seleccionarCampoEmpleado", {titulo: "Seleccionar Campo", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
+})
+.post ("/seleccionarCampoEmpleado", (req, res) => {
+    campoEditar = req.body.campoEditar;
+    res.redirect ("/editarEmpleado");  
+});
+
 // Ruta editarEmpleado
 app.get ("/editarEmpleado", (req, res) => {
     if (!sesionIniciada){
@@ -473,11 +622,33 @@ app.get ("/editarEmpleado", (req, res) => {
         return;
     }
 
+    if (campoEditar.length === 0){
+        res.redirect ("/buscarEmpleado");
+        
+        return;
+    }
+
     res.render ("editarEmpleado", {titulo: "Editar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
+    sesion: sesionIniciada, mensajeError: "", campoEditarP: campoEditar});
 })
 .post ("/editarEmpleado", (req, res) => {
-    //
+    const nuevoValor = req.body.nuevoValor;
+
+    if (campoEditar === "nombre" || campoEditar === "curp" || campoEditar === "telefono" || 
+    campoEditar === "fechaNacimiento" || campoEditar === "rfc" || campoEditar === "escolaridad" || campoEditar === "puesto"){
+        conexion.query (`UPDATE personal SET ${campoEditar}="${nuevoValor}" WHERE id="${idEditar}";`, (err) => {
+            if (err) throw err;
+        });
+    }
+    else{
+        conexion.query (`UPDATE personal SET ${campoEditar}=${nuevoValor} WHERE id="${idEditar}";`, (err) => {
+            if (err) throw err;
+        });
+    }
+
+    campoEditar = "";
+    idEditar = "";
+    res.redirect ("/menuPrincipal"); 
 });
 
 // Ruta eliminarEmpleado
@@ -492,7 +663,18 @@ app.get ("/eliminarEmpleado", (req, res) => {
     sesion: sesionIniciada, mensajeError: ""});
 })
 .post ("/eliminarEmpleado", (req, res) => {
-    //
+    const id = req.body.id;
+
+    conexion.query (`DELETE FROM personal WHERE id="${id}"`, (err) => {
+        if (err) {
+            res.render ("eliminarEmpleado", {titulo: "Eliminar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "Ocurrio un error. Vuelve a intentarlo."});
+
+            return;
+        }
+    });
+    
+    res.redirect ("/menuPrincipal");
 });
 
 // Ruta puntoVentaMenu
@@ -922,6 +1104,6 @@ app.get ("/reporteVentas", (req, res) => {
 });
 
 app.listen (process.env.PORT || 3000, () => {
-    console.log ("Server running on port 3000");
+    console.log ("Server running on port http://localhost:3000");
 });
 
