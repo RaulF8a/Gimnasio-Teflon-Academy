@@ -51,6 +51,7 @@ let campoEditar = "";
 let idEditar = "";
 let idPagar = "";
 let enviadoDesdePago = false;
+let enviadoDesdeRegistroAtleta = false;
 let cuentaBuscada = {};
 
 // Generar ID de usuario.
@@ -367,6 +368,12 @@ app.get ("/pagoMembresia", (req, res) => {
         return;
     }
 
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
+
     if (idPagar.length === 0) {
         enviadoDesdePago = true;
         res.redirect ("/buscarAtleta");
@@ -416,6 +423,7 @@ app.post ("/guardarPagoMembresia", (req, res) => {
 
     idPagar = "";
     enviadoDesdePago = false;
+    enviadoDesdeRegistroAtleta = false;
 
     res.redirect ("/menuPrincipal");
 });
@@ -439,9 +447,13 @@ app.get ("/registroAcceso", (req, res) => {
 
             return;
         }
-    });
+        else {
+            res.render ("registroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "Visita registrada."});
 
-    res.redirect ("/registroAcceso");
+            return;
+        }
+    });
 });
 
 // Ruta verRegistroAcceso
@@ -451,6 +463,12 @@ app.get ("/verRegistroAcceso", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     conexion.query (`SELECT * FROM visitas;`, (err, datos) => {
         res.render ("verRegistroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
@@ -488,7 +506,14 @@ app.get ("/crearContrasenia", (req, res) => {
     conexion.query ("INSERT INTO users SET ?", {user:usuarioRegistrado.id, pass:passCrypt, rol:usuarioRegistrado.puesto});
 
     passRequested = false;
-    res.redirect ("/menuPrincipal");
+
+    if (enviadoDesdeRegistroAtleta) {
+        enviadoDesdeRegistroAtleta = false;
+        res.redirect ("/pagoMembresia");
+    }
+    else {
+        res.redirect ("/menuPrincipal");
+    }
 });
 
 // Ruta agregarAtleta
@@ -498,6 +523,12 @@ app.get ("/registrarAtleta", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     res.render ("registroAtleta", {titulo: "Registrar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
@@ -545,8 +576,9 @@ app.get ("/registrarAtleta", (req, res) => {
             usuarioRegistrado.nombre = nombre;
             usuarioRegistrado.puesto = "Atleta";
             
-            console.log (usuarioRegistrado);
             passRequested = true;
+            enviadoDesdeRegistroAtleta = true;
+            idPagar = id;
             res.redirect ("/crearContrasenia");
         }
     });
@@ -560,6 +592,12 @@ app.get ("/editarAtleta", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     if (campoEditar.length === 0){
         res.redirect ("/buscarAtleta");
@@ -598,6 +636,12 @@ app.get ("/eliminarAtleta", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     res.render ("eliminarAtleta", {titulo: "Eliminar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
@@ -693,6 +737,12 @@ app.get ("/registrarEmpleado", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
@@ -795,6 +845,12 @@ app.get ("/editarEmpleado", (req, res) => {
         return;
     }
 
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
+
     if (campoEditar.length === 0){
         res.redirect ("/buscarEmpleado");
         
@@ -832,6 +888,12 @@ app.get ("/eliminarEmpleado", (req, res) => {
         return;
     }
 
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
+
     res.render ("eliminarEmpleado", {titulo: "Eliminar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
 })
@@ -857,6 +919,12 @@ app.get ("/puntoVentaMenu", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
     
     res.render ("puntoVentaMenu", {titulo: "Punto de Venta", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
@@ -872,6 +940,12 @@ app.get ("/puntoVentaCarrito", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
     
     res.render ("puntoVentaCarrito", {titulo: "Carrito", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito});
@@ -1041,6 +1115,12 @@ app.get ("/puntoVentaAnadirInventario", (req, res) => {
         return;
     }
 
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
+
     res.render ("puntoVentaAnadirInventario", {titulo: "Añadir al Inventario", usuario: usuarioSesionIniciada.nombre, 
     login: false, sesion: sesionIniciada, mensajeError: ""});
 })
@@ -1073,6 +1153,12 @@ app.get ("/puntoVentaEliminarInventario", (req, res) => {
         return;
     }
 
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
+
     res.render ("puntoVentaEliminarInventario", {titulo: "Eliminar del Inventario", usuario: usuarioSesionIniciada.nombre, 
     login: false, sesion: sesionIniciada, mensajeError: ""});
 })
@@ -1099,6 +1185,12 @@ app.get ("/puntoVentaEditarInventario", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     if (campoEditar.length === 0){
         res.redirect ("/buscarProducto");
@@ -1185,6 +1277,12 @@ app.get ("/puntoVentaInventario", (req, res) => {
         return;
     }
 
+    if (usuarioSesionIniciada.puesto !== "Administrativo" && usuarioSesionIniciada.puesto !== "Auxiliar Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
+
     conexion.query (`SELECT * FROM productos;`, (err, datos) => {
         if (err) throw err;
 
@@ -1207,6 +1305,12 @@ app.get ("/menuFinanzas", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     res.render ("menuFinanzas", {titulo: "Menú de Finanzas", usuario: usuarioSesionIniciada.nombre, login: false, 
     sesion: sesionIniciada, mensajeError: ""});
@@ -1248,6 +1352,12 @@ app.get ("/consultarCuenta", (req, res) => {
         return;
     }
 
+    if (usuarioSesionIniciada.puesto !== "Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
+
     conexion.query (`SELECT detalle_venta.id_producto, productos.nombre, detalle_venta.cantidad, detalle_venta.total 
     FROM detalle_venta INNER JOIN productos ON detalle_venta.id_producto = productos.id_producto 
     AND id_venta="${cuentaBuscada.id}";`, (err, datos) => {
@@ -1269,6 +1379,12 @@ app.get ("/reporteVentas", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     conexion.query (`SELECT * FROM venta;`, (err, datos) => {
         if (err) throw err;
@@ -1294,6 +1410,12 @@ app.get ("/reporteMembresias", (req, res) => {
 
         return;
     }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    };
 
     conexion.query (`SELECT pago_membresia.id_pago_membresia, pago_membresia.id_cliente, pago_membresia.fecha_pago, 
     membresias.costo_membresia FROM pago_membresia INNER JOIN membresias ON pago_membresia.tipo_membresia=

@@ -7,7 +7,7 @@
                     Menú Principal 
                 </h2>
                 
-                <% if (privilegio === "Administrativo" || privilegio === "Auxiliar Administrativo") { %>
+                <% if (privilegio === "Administrativo") { %>
                     <div class="row" style="padding-top: 25px;">
                         <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
                             <button type="submit" class="btn btn-dark"  formmethod="get" formaction="/registroAcceso">Acceso</button>
@@ -63,6 +63,62 @@
                             <button type="submit" class="btn btn-danger" formmethod="get" formaction="/puntoVentaMenu">Punto de Venta</button> 
                         </div>
     
+                    </div>
+                <% } else if (privilegio === "Auxiliar Administrativo") { %>
+                    <div class="row" style="padding-top: 25px;">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark"  formmethod="get" formaction="/registroAcceso">Acceso</button>
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/verRegistroAcceso">Ver el Registro de Accesos</button> 
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/pagoMembresia">Pago de Membresía</button>
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/resumen"> Bitácora de Atelta</button> 
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/registrarAtleta">Agregar Atleta</button> 
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/registrarEmpleado">Agregar Empleado</button>
+                        </div>
+                    </div>
+    
+    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/editarAtleta">Editar Atleta</button> 
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/editarEmpleado">Editar Empleado</button>
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/eliminarAtleta">Eliminar Atleta</button> 
+                        </div>
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-dark" formmethod="get" formaction="/eliminarEmpleado">Eliminar Empleado</button>
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-sm d-grid"></div>
+                        
+                        <div class="col-sm d-grid" style="text-align: center; margin-top: 25px">
+                            <button type="submit" class="btn btn-danger" formmethod="get" formaction="/puntoVentaMenu">Punto de Venta</button> 
+                        </div>
+                        
+                        <div class="col-sm d-grid"></div>
                     </div>
                 <% } else { %>
                     <div class="row">
