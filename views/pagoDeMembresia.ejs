@@ -2,50 +2,52 @@
 
     <div class="justify-content-center align-items-center h-100">
         <div>
-            <form action="/pagoMembresia" method="post">
-                <h2 class="fw-bold mb-2 eliminarFormTitulo">Pagar Membresia</h2>
+            <h2 class="fw-bold mb-2 eliminarFormTitulo">Pagar Membresia</h2>
 
-                <div class="row" style="text-align: center;">
-                    <div class="col-sm">
-                    </div>
-
-                    <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
-                        <label class="form-label fw-bold" for="digitarID">ID</label>
-                        <input
-                            id="digitarID"
-                            class="form-control"
-                        />
-                    </div>
-
-                    <div class="col-sm">
-                    </div>
+            <div class="row" style="text-align: center;">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-2"></div>
+                
+                <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
+                    <label class="form-label fw-bold" for="periodo">Periodo a Pagar</label>
+                    <input id="periodo" type="text" class="form-control" disabled value="<%= tipoMembresia %>"/>
                 </div>
-
-                <div class="row" style="text-align: center;">
-                    <div class="col-sm">
-                    </div>
-
-                    <div class="form-outline form-white mb-4 col-sm-2 registrarEmpleadoFormInput">
-                        <label class="form-label fw-bold" for="periodoPagado">Periodo Pagado</label>
-                        <select id="periodoPagado" name="periodoPagado" class="form-select">
-                            <option value="" selected hidden></option>
-                            <option value="Semanal">Semanal</option>
-                            <option value="Mensual">Mensual</option>
-                            <option value="Anual">Anual</option>
-                        </select>
-                    </div>
-
-                    <div class="col-sm">
-                    </div>
+                
+                <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
+                    <label class="form-label fw-bold" for="monto">Monto a Pagar</label>
+                    <input type="text" id="monto" class="form-control" disabled value="$<%= costoMembresia %>"/>
                 </div>
+            </div>
 
-                <div style="text-align:center; margin-top: 50px;">
-                    <button type="submit" class="btn btn-success">Registrar Pago</button>
+            <div style="text-align: center; padding-top: 30px">
+                <form action="/pagoMembresia" method="post">
+                    <input type="text" name="montoPagado" pattern="[0-9]{1,5}" onsubmit="validate (this)" 
+                    placeholder="Digita la cantidad pagada"/>
+                    <button type="submit" class="btn btn-dark">Calcular Cambio</button>
+                    <input hidden name="total" value="<%= costoMembresia %>"/>
+                    <input hidden name="membresia" value="<%= tipoMembresia %>">
+                </form>
+            </div>
+
+            <% if (cambio >= 0) { %>
+                <div style="text-align: center; padding-top: 30px">
+                    <p style="font-weight: bold; font-size: 20px;">El cambio a entregar es: $<%= cambio %></p>   
                 </div>
-            </form>
+            
+                <div style="text-align: center; padding-top: 15px">
+                    <form action="/guardarPagoMembresia" method="post">
+                        <button type="submit" class="btn btn-danger">Terminar</button>
+                    </form>
+                </div>
+            <% } else if (cambio != -0.0000001){ %>
+                <div style="text-align: center; padding-top: 30px">
+                    <p style="font-weight: bold; font-size: 20px;">La cantidad pagada no es suficiente.</p>   
+                </div>
+            <% } %>
+
         </div>
 
-        <div style="text-align:center; padding-top: 120px;">
+        <div style="text-align:center; padding-top: 100px;">
             <!-- Rellenar dinamicamente dependiendo de si se logro o fallo la eliminacion -->
             <p><%= mensajeError %> </p>
         </div>

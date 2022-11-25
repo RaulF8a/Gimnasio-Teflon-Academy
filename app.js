@@ -49,6 +49,8 @@ let carrito = [];
 let sesionIniciada = false;
 let campoEditar = "";
 let idEditar = "";
+let idPagar = "";
+let enviadoDesdePago = false;
 let cuentaBuscada = {};
 
 // Generar ID de usuario.
@@ -145,6 +147,57 @@ function obtenerHora () {
     return hora;
 }
 
+function calcularDias (fecha) { 
+    let fechaActual = new Date ();
+    let fechaAnterior = new Date (fecha);
+    fechaActual.setHours (0);
+    fechaActual.setMinutes (0);
+    fechaActual.setSeconds (0);
+    fechaActual.setMilliseconds (0);
+
+    let dias = (fechaActual.getTime () - fechaAnterior.getTime ()) / (1000 * 3600 * 24);
+
+    return dias.toFixed (0);
+}
+
+function determinarPagoVencido () {
+    let dias = 0;
+    let tipoMembresia = "";
+    let fechaPago = "";
+
+    conexion.query (`SELECT pago_membresia.id_cliente, pago_membresia.fecha_pago, cliente.tipo_membresia 
+    FROM pago_membresia INNER JOIN cliente ON cliente.id_cliente = pago_membresia.id_cliente
+    AND pago_membresia.id_cliente = "${usuarioSesionIniciada.id}";`, async (err, datos) => {
+        if (err) throw err;
+
+        console.log (datos);
+        tipoMembresia = datos[0].tipo_membresia;
+        fechaPago = datos[0].fecha_pago;
+        
+        dias = await calcularDias (fechaPago);    
+        if (tipoMembresia === "Semanal") {
+            console.log ("Semanal");
+        }
+        else if (tipoMembresia === "Mensual") {
+            console.log ("Mensual");
+        }
+        else if (tipoMembresia === "Anual") {
+            console.log ("Anual");
+        }
+    
+        if ((dias > 7 || dias <= 14) || (dias > 30 || dias <= 37) || (dias > 365 || dias <= 372)){
+            return "Estas dentro de la semana de tolerancia. Recomendamos pagar lo antes posible.";
+        }
+        else if (dias > 14|| dias > 37 || dias > 372) {
+            return "Tienes un saldo pendiente. Liquidalo de inmediato.";
+        }
+        else{
+            return "";
+        }
+    });
+
+}
+
 function capitalizar (cadena) {
     let cadenaCapitalizada = cadena.split(" ");
 
@@ -161,6 +214,7 @@ function capitalizar (cadena) {
 app.get ("/", (req, res) => {
     res.render ("home", {titulo: "Gimnasio Teflon Academy", usuario: usuarioSesionIniciada.nombre, 
     login: false, sesion: sesionIniciada, mensajeError: ""});
+
 })
 .post ("/", (req, res) => {
     //
@@ -232,8 +286,69 @@ app.get ("/menuPrincipal", (req, res) => {
         return;
     }
     
-    res.render ("menuPrincipal", {titulo: "Menu Principal", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: "", privilegio:usuarioSesionIniciada.puesto});
+    if (usuarioSesionIniciada.puesto === "Atleta") {
+        let dias = 0;
+        let tipoMembresia = "";
+        let fechaPago = "";
+        let pagoVencido = "";
+
+        conexion.query (`SELECT pago_membresia.id_cliente, pago_membresia.fecha_pago, cliente.tipo_membresia 
+        FROM pago_membresia INNER JOIN cliente ON cliente.id_cliente = pago_membresia.id_cliente
+        AND pago_membresia.id_cliente = "${usuarioSesionIniciada.id}";`, (err, datos) => {
+            if (err) throw err;
+            
+            tipoMembresia = datos[0].tipo_membresia;
+            fechaPago = datos[0].fecha_pago;
+            
+            dias = calcularDias (fechaPago);
+
+            if (tipoMembresia === "Semanal") {
+                if (dias > 7 && dias <= 14){
+                    pagoVencido = "Estas dentro de la semana de tolerancia. Recomendamos pagar lo antes posible.";
+                }
+                else if (dias > 14) {
+                    pagoVencido = "Tienes un saldo pendiente. Liquidalo de inmediato.";
+                }
+                else{
+                    pagoVencido = "";
+                }
+            }
+            else if (tipoMembresia === "Mensual") {
+                if (dias > 30 && dias <= 37){
+                    pagoVencido = "Estas dentro de la semana de tolerancia. Recomendamos pagar lo antes posible.";
+                }
+                else if (dias > 37) {
+                    pagoVencido = "Tienes un saldo pendiente. Liquidalo de inmediato.";
+                }
+                else{
+                    pagoVencido = "";
+                }
+            }
+            else if (tipoMembresia === "Anual") {
+                if (dias >= 365 && dias <= 372){
+                    pagoVencido = "Estas dentro de la semana de tolerancia. Recomendamos pagar lo antes posible.";
+                }
+                else if (dias > 372) {
+                    pagoVencido = "Tienes un saldo pendiente. Liquidalo de inmediato.";
+                }
+                else{
+                    pagoVencido = "";
+                }
+            }
+    
+            if (pagoVencido.length !== 0){
+                res.render ("menuPrincipal", {titulo: "Menu Principal", usuario: usuarioSesionIniciada.nombre, login: false, 
+                sesion: sesionIniciada, mensajeError:pagoVencido, privilegio:usuarioSesionIniciada.puesto});
+    
+                return;
+            }
+        });
+    }
+    else{
+        res.render ("menuPrincipal", {titulo: "Menu Principal", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", privilegio:usuarioSesionIniciada.puesto});
+    }
+    
 })
 .post ("/menuPrincipal", (req, res) => {
     // Cuando seleccione editar empleado o atleta, redirigir primero a buscar.
@@ -247,11 +362,55 @@ app.get ("/pagoMembresia", (req, res) => {
         return;
     }
 
-    res.render ("pagoDeMembresia", {titulo: "Pago de Membresia", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
+    if (idPagar.length === 0) {
+        enviadoDesdePago = true;
+        res.redirect ("/buscarAtleta");
+
+        return;
+    }
+
+    let tipoMembresia = "";
+    let precio = 0;
+
+    conexion.query (`SELECT tipo_membresia FROM cliente WHERE id_cliente="${idPagar}";`, (err, datos) => {
+        if (err) throw err;
+
+        tipoMembresia = datos[0].tipo_membresia;
+
+        conexion.query (`SELECT costo_membresia FROM membresias WHERE tipo_membresia="${tipoMembresia}"`, (err, datosM) => {
+            if (err) throw err;
+
+            precio = datosM[0].costo_membresia;
+            
+            res.render ("pagoDeMembresia", {titulo: "Pago de Membresia", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "", tipoMembresia:tipoMembresia, costoMembresia:precio, cambio:-0.0000001});
+        });
+    });
+
 })
 .post ("/pagoMembresia", (req, res) => {
-    //
+    const total = req.body.total;
+    const montoPagado = req.body.montoPagado;
+    const tipoMembresia = req.body.membresia;
+
+    let cambio = montoPagado - total;
+    cambio = cambio.toFixed (2);  
+
+    res.render ("pagoDeMembresia", {titulo: "Pago de Membresia", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: "", tipoMembresia:tipoMembresia, costoMembresia:total, cambio:cambio});
+});
+
+app.post ("/guardarPagoMembresia", (req, res) => {
+    let fecha = obtenerFecha ();
+
+    conexion.query (`INSERT INTO pago_membresia SET ?`, {id_cliente:idPagar, fecha_pago:fecha}, (err) => {
+        if (err) throw err;
+    });
+
+    idPagar = "";
+    enviadoDesdePago = false;
+
+    res.redirect ("/menuPrincipal");
 });
 
 // Ruta registroAcceso
@@ -492,8 +651,15 @@ app.get ("/buscarAtleta", (req, res) => {
             return;
         }
 
-        idEditar = datos[0].id_cliente;
-        res.redirect ("/seleccionarCampoAtleta");
+        
+        if (enviadoDesdePago){
+            idPagar = datos[0].id_cliente;
+            res.redirect ("/pagoMembresia");
+        }
+        else{
+            idEditar = datos[0].id_cliente;
+            res.redirect ("/seleccionarCampoAtleta");
+        }
     });
 
 });
@@ -766,22 +932,23 @@ app.get ("/puntoVentaTotal", (req, res) => {
     total = total.toFixed (2);
 
     res.render ("puntoVentaTotal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:-0.0000001});
+    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:-0.0000001,numeroCuenta:""});
 })
 .post ("/puntoVentaTotal", (req, res) => {
     const total = req.body.total;
     const montoPagado = req.body.montoPagado;
+    let numeroCuenta = generarNumeroCuenta ();
 
     let cambio = montoPagado - total;
     cambio = cambio.toFixed (2);
 
     res.render ("puntoVentaTotal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:cambio});
+    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:cambio, numeroCuenta:numeroCuenta});
 });
 
 app.post ("/guardarCuenta", (req, res) => {
     const total = req.body.total;
-    let numeroCuenta = generarNumeroCuenta ();
+    let numeroCuenta = req.body.numeroCuenta;
     let nuevaExistencia = 0;
     let fecha = obtenerFecha ();
     let cantidadComprada = 0;
@@ -821,28 +988,39 @@ app.post ("/guardarCuenta", (req, res) => {
     // Crear una cuenta.
     conexion.query (`INSERT INTO venta SET ?`, {id_venta:numeroCuenta, fecha:fecha, total:total, 
     cantidadProductos:productosVendidos});
+    
+    carrito.forEach ((elemento) => {
+        idActual = elemento.id;
+        cantidadComprada = parseInt (elemento.cantidad);
+        totalProductoActual = parseFloat (parseFloat (elemento.precio) * cantidadComprada);
 
-    // Crear el reporte de venta.
-    for (let index = 0; index < carrito.length; index++){
-        idActual = carrito[index].id;
-        cantidadComprada = parseInt (carrito[index].cantidad);
-        totalProductoActual = parseFloat (parseFloat (carrito[index].precio) * cantidadComprada);
-
-        // console.log (idActual);
-        // console.log (productoActual);
-        // console.log (cantidadComprada);
-        // console.log (totalProductoActual);
-
-        // conexion.query (`SELECT id_producto FROM productos WHERE nombre="${productoActual}"`, (err, datos) => {
-        //     if (err) throw err;
-        //     id = datos[0].id_producto;   
-        // });
-        
         conexion.query (`INSERT INTO detalle_venta SET ?`, {id_producto:idActual, cantidad:cantidadComprada,
         total:totalProductoActual, id_venta:numeroCuenta}, (err) => {
             if (err) throw err;
         });
-    }
+    });
+    
+    // Crear el reporte de venta.
+    // for (let index = 0; index < carrito.length; index++){
+    //     idActual = carrito[index].id;
+    //     cantidadComprada = parseInt (carrito[index].cantidad);
+    //     totalProductoActual = parseFloat (parseFloat (carrito[index].precio) * cantidadComprada);
+
+    //     console.log (idActual);
+    //     console.log (productoActual);
+    //     console.log (cantidadComprada);
+    //     console.log (totalProductoActual);
+
+    //     conexion.query (`SELECT id_producto FROM productos WHERE nombre="${productoActual}"`, (err, datos) => {
+    //         if (err) throw err;
+    //         id = datos[0].id_producto;   
+    //     });
+        
+    //     conexion.query (`INSERT INTO detalle_venta SET ?`, {id_producto:idActual, cantidad:cantidadComprada,
+    //     total:totalProductoActual, id_venta:numeroCuenta}, (err) => {
+    //         if (err) throw err;
+    //     });
+    // }
 
     carrito = [];
     res.redirect ("/puntoVentaMenu");

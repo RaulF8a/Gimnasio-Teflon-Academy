@@ -40,11 +40,13 @@
 <% if (cambio >= 0) { %>
     <div style="text-align: center; padding-top: 30px">
         <p style="font-weight: bold; font-size: 20px;">El cambio a entregar es: $<%= cambio %></p>   
+        <p style="font-weight: bold; font-size: 20px;">El número de cuenta es: <%= numeroCuenta %></p>   
     </div>
 
     <div style="text-align: center; padding-top: 15px">
         <form action="/guardarCuenta" method="post">
             <input type="hidden" name="total" value="<%= totalCuenta %>" class="total">
+            <input type="hidden" name="numeroCuenta" value="<%= numeroCuenta %>" class="total">
             <button type="submit" class="btn btn-danger">Terminar</button>
         </form>
     </div>
