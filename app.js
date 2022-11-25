@@ -291,7 +291,6 @@ app.get ("/menuPrincipal", (req, res) => {
         let tipoMembresia = "";
         let fechaPago = "";
         let pagoVencido = "";
-
         conexion.query (`SELECT pago_membresia.id_cliente, pago_membresia.fecha_pago, cliente.tipo_membresia 
         FROM pago_membresia INNER JOIN cliente ON cliente.id_cliente = pago_membresia.id_cliente
         AND pago_membresia.id_cliente = "${usuarioSesionIniciada.id}";`, (err, datos) => {
@@ -335,10 +334,16 @@ app.get ("/menuPrincipal", (req, res) => {
                     pagoVencido = "";
                 }
             }
-    
+            console.log (pagoVencido);
             if (pagoVencido.length !== 0){
                 res.render ("menuPrincipal", {titulo: "Menu Principal", usuario: usuarioSesionIniciada.nombre, login: false, 
                 sesion: sesionIniciada, mensajeError:pagoVencido, privilegio:usuarioSesionIniciada.puesto});
+    
+                return;
+            }
+            else {
+                res.render ("menuPrincipal", {titulo: "Menu Principal", usuario: usuarioSesionIniciada.nombre, login: false, 
+                sesion: sesionIniciada, mensajeError:"", privilegio:usuarioSesionIniciada.puesto});
     
                 return;
             }
@@ -402,8 +407,10 @@ app.get ("/pagoMembresia", (req, res) => {
 
 app.post ("/guardarPagoMembresia", (req, res) => {
     let fecha = obtenerFecha ();
+    const tipoMembresia = req.body.tipoMembresia;
 
-    conexion.query (`INSERT INTO pago_membresia SET ?`, {id_cliente:idPagar, fecha_pago:fecha}, (err) => {
+    conexion.query (`INSERT INTO pago_membresia SET ?`, {id_cliente:idPagar, fecha_pago:fecha, tipo_membresia:tipoMembresia}, 
+    (err) => {
         if (err) throw err;
     });
 
@@ -1281,7 +1288,33 @@ app.get ("/reporteVentas", (req, res) => {
     res.redirect ("/menuFinanzas");
 });
 
+app.get ("/reporteMembresias", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    conexion.query (`SELECT pago_membresia.id_pago_membresia, pago_membresia.id_cliente, pago_membresia.fecha_pago, 
+    membresias.costo_membresia FROM pago_membresia INNER JOIN membresias ON pago_membresia.tipo_membresia=
+    membresias.tipo_membresia;`, (err, datos) => {
+        if (err) throw err;
+
+        if (datos.length === 0) {
+            res.redirect ("/menuFinanzas");
+
+            return;
+        }
+
+        res.render ("reporteMembresias", {titulo: "Reporte de Ventas", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", resultados:datos, totalMes:0, mes:0});
+    });
+})
+.post ("/reporteMembresias", (req, res) => {
+    res.redirect ("/menuFinanzas");
+});
+
 app.listen (process.env.PORT || 3000, () => {
-    console.log ("Server running on port http://localhost:3000");
+    console.log ("Server running on http://localhost:3000");
 });
 

@@ -56,6 +56,19 @@ CREATE TABLE membresias(
 LOCK TABLES membresias WRITE;
 UNLOCK TABLES;
 
+DROP TABLE IF EXISTS pago_membresia;
+CREATE TABLE pago_membresia(
+	id_pago_membresia int NOT NULL auto_increment PRIMARY KEY,
+	id_cliente varchar(25) not null,
+    fecha_pago VARCHAR (20) NOT NULL,
+    tipo_membresia varchar(25) not null,
+
+    CONSTRAINT pago_membresia_ibfk_1 FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
+    CONSTRAINT pago_membresia_ibfk_2 FOREIGN KEY (tipo_membresia) REFERENCES membresias(tipo_membresia)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+LOCK TABLES pago_membresia WRITE;
+UNLOCK TABLES;
+
 DROP TABLE IF EXISTS visitas;
 CREATE TABLE visitas(
 	id_visita int NOT NULL auto_increment PRIMARY KEY,
@@ -136,5 +149,3 @@ CREATE TABLE detalle_venta (
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 LOCK TABLES detalle_venta WRITE;
 UNLOCK TABLES;
-
-  
