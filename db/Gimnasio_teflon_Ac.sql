@@ -83,7 +83,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS bitacoras;
 CREATE TABLE bitacoras(
-	id_bitacora int NOT NULL auto_increment,
+	id_bitacora int NOT NULL auto_increment PRIMARY KEY,
 	id_cliente VARCHAR (10) NOT NULL,
 	imc_cliente double,
 	objetivo varchar(150),
@@ -91,8 +91,6 @@ CREATE TABLE bitacoras(
 	altura float NOT NULL,
 	KEY peso(peso),
 	KEY altura(altura),
-	CONSTRAINT bitacora_ibfk_1 FOREIGN KEY (peso) REFERENCES cliente(peso),
-	CONSTRAINT bitacora_ibfk_2 FOREIGN KEY (altura) REFERENCES cliente(altura),
 	CONSTRAINT bitacora_ibfk_3 FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 LOCK TABLES bitacoras WRITE;
@@ -149,3 +147,4 @@ CREATE TABLE detalle_venta (
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 LOCK TABLES detalle_venta WRITE;
 UNLOCK TABLES;
+

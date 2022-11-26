@@ -222,7 +222,7 @@ app.get ("/", (req, res) => {
 
 })
 .post ("/", (req, res) => {
-    //
+    res.redirect ("/registroAcceso")
 });
 
 // Ruta login
