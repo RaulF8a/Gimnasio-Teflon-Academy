@@ -50,8 +50,12 @@ let sesionIniciada = false;
 let campoEditar = "";
 let idEditar = "";
 let idPagar = "";
+let idResumen = "";
 let enviadoDesdePago = false;
 let enviadoDesdeRegistroAtleta = false;
+let enviadoDesdeResumen = false;
+let nuevoPeso = 0;
+let nuevaEstatura = 0;
 let cuentaBuscada = {};
 
 // Generar ID de usuario.
@@ -575,7 +579,13 @@ app.get ("/registrarAtleta", (req, res) => {
             usuarioRegistrado.id = id;
             usuarioRegistrado.nombre = nombre;
             usuarioRegistrado.puesto = "Atleta";
+            let imc = (peso / (Math.pow (altura, 2))).toFixed (2);
             
+            conexion.query (`INSERT INTO bitacoras SET ?`, {id_cliente:id, imc_cliente:imc, objetivo:"", peso:peso, altura:altura},
+            (err) => {
+                if (err) throw err;
+            });
+
             passRequested = true;
             enviadoDesdeRegistroAtleta = true;
             idPagar = id;
@@ -702,10 +712,14 @@ app.get ("/buscarAtleta", (req, res) => {
             return;
         }
 
-        
+        // Determinar desde donde se hizo la solicitud de busqueda.
         if (enviadoDesdePago){
             idPagar = datos[0].id_cliente;
             res.redirect ("/pagoMembresia");
+        }
+        else if (enviadoDesdeResumen) {
+            idResumen = datos[0].id_cliente;
+            res.redirect ("/actualizarPeso");
         }
         else{
             idEditar = datos[0].id_cliente;
@@ -713,6 +727,24 @@ app.get ("/buscarAtleta", (req, res) => {
         }
     });
 
+});
+
+app.get ("/actualizarPeso", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    res.render ("actualizarPeso", {titulo: "Actualizar Peso y Estatura", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
+})
+.post ("/actualizarPeso", (req, res) => {
+    // Obtener los nuevos valores de peso y altura en variables globales.
+    nuevoPeso = req.body.nuevoPeso;
+    nuevaEstatura = req.body.nuevaAltura;
+
+    res.redirect ("/resumen");
 });
 
 // Ruta resumen del atleta.
@@ -723,11 +755,78 @@ app.get ("/resumen", (req, res) => {
         return;
     }
 
-    res.render ("resumen", {titulo: "Resumen de Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: ""});
+    if (usuarioSesionIniciada.puesto === "Atleta") {
+        // A un atleta no se le permite modificar sus atributos.
+
+        conexion.query (`SELECT * FROM bitacoras WHERE id_cliente="${usuarioSesionIniciada.id}"`, (err, datos) => {
+            res.render ("resumen", {titulo: "Resumen de Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "", resultados:datos, nuevoPeso:0, nuevaEstatura:0,
+            privilegio:usuarioSesionIniciada.puesto});
+        });
+
+        return;
+    }
+
+    // Si aun no se tiene el ID del cliente, debemos redirigir a la busqueda.
+    if (idResumen.length === 0){
+        enviadoDesdeResumen = true;
+        res.redirect ("/buscarAtleta");
+
+        return;
+    }
+    
+    // Si ya se obtuvo, realizamos la consulta para obtener su bitacora.
+    conexion.query (`SELECT * FROM bitacoras WHERE id_cliente="${idResumen}";`, (err, datos) => {
+        if (err) throw err;
+        
+        res.render ("resumen", {titulo: "Resumen de Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", resultados:datos, nuevoPeso:nuevoPeso, nuevaEstatura:nuevaEstatura,
+        privilegio:usuarioSesionIniciada.puesto});
+    });
+
 })
 .post ("/resumen", (req, res) => {
-    //
+    // Calculamos el nuevo IMC.
+    let nuevoIMC = (nuevoPeso / (Math.pow (nuevaEstatura, 2))).toFixed (2);
+
+    // Actualizamos valores de altura, peso, e IMC en la bitacora.
+    conexion.query (`UPDATE bitacoras SET peso=${nuevoPeso}, altura=${nuevaEstatura}, imc_cliente=${nuevoIMC}
+    WHERE id_cliente="${idResumen}";`, (err) =>{
+        if (err) throw err;
+    });
+
+    // Reiniciamos las variables y redirigimos.
+    enviadoDesdeResumen = false;
+    nuevoPeso = 0;
+    nuevaEstatura = 0;
+    res.redirect ("/establecerNuevoObjetivo");
+});
+
+app.get ("/establecerNuevoObjetivo", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+    
+    res.render ("establecerObjetivo", {titulo: "Establecer Nuevo Objetivo", usuario: usuarioSesionIniciada.nombre, login: false, 
+    sesion: sesionIniciada, mensajeError: ""});
+})
+.post ("/establecerNuevoObjetivo", (req, res) => {
+    const objetivo = req.body.objetivo;
+
+    // Establecemos el nuevo objetivo.
+    conexion.query (`UPDATE bitacoras SET objetivo="${objetivo}" WHERE id_cliente="${idResumen}";`, (err) =>{
+        if (err) throw err;
+    });
+
+    idResumen = "";
+    res.redirect ("/menuPrincipal");
+});
+
+app.post ("/resumenAtleta", (req, res) => {
+    // Al atleta directamente lo regresamos al menu principal.
+    res.redirect ("/menuPrincipal");
 });
 
 // Ruta agregarEmpleado
@@ -1434,6 +1533,34 @@ app.get ("/reporteMembresias", (req, res) => {
 })
 .post ("/reporteMembresias", (req, res) => {
     res.redirect ("/menuFinanzas");
+});
+
+app.get ("/consultarDatos", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+    
+    if (usuarioSesionIniciada.puesto === "Atleta") {
+        conexion.query (`SELECT * FROM cliente WHERE id_cliente="${usuarioSesionIniciada.id}";`, (err, datos) => {
+            if (err) throw err;
+
+            res.render ("consultarDatos", {titulo:"Consultar Datos", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "", resultados:datos, privilegio:usuarioSesionIniciada.puesto});
+        });
+    }
+    else {
+        conexion.query (`SELECT * FROM personal WHERE id="${usuarioSesionIniciada.id}";`, (err, datos) => {
+            if (err) throw err;
+
+            res.render ("consultarDatos", {titulo:"Consultar Datos", usuario: usuarioSesionIniciada.nombre, login: false, 
+            sesion: sesionIniciada, mensajeError: "", resultados:datos, privilegio:usuarioSesionIniciada.puesto});
+        });
+    }
+})
+.post ("/consultarDatos", (req, res) => {
+    res.redirect ("/menuPrincipal");
 });
 
 app.listen (process.env.PORT || 3000, () => {

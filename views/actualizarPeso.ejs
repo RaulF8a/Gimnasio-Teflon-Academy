@@ -1,0 +1,54 @@
+<%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+
+    <script>
+        function validate(input) {
+            let validityState_object = input.validity;
+
+            if (validityState_object.patternMismatch) {
+                input.setCustomValidity('El formato no es correcto.');
+            } 
+            else {
+                input.setCustomValidity('');
+            }
+        }
+    </script>
+
+    <div class="justify-content-center align-items-center h-100">
+        <div>
+            <form action="/actualizarPeso" method="post">
+                <h2 class="fw-bold mb-2 eliminarFormTitulo">Editar Peso del Atleta</h2>
+
+                <div class="row" style="text-align: center;">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-2"></div>
+
+                    <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
+                        <label class="form-label fw-bold" for="nuevoPeso">Nuevo Peso</label>
+                        <input
+                            id="nuevoPeso"
+                            name="nuevoPeso"
+                            class="form-control"
+                            pattern="^[0-9]{1,4}\.{0,1}[0-9]{1,10}$"
+                            onsubmit="validate (this)" />
+                    </div>
+
+                    <div class="form-outline form-white mb-4 col-sm-2 elimnarFormInput">
+                        <label class="form-label fw-bold" for="nuevaAltura">Nueva Altura</label>
+                        <input id="Altura" name="nuevaAltura" class="form-control" pattern="^[0-3]\.[0-9]{2}$"
+                        onsubmit="validate (this)" />
+                    </div>
+                </div>
+
+                <div style="text-align:center; margin-top: 50px;">
+                    <button type="submit" class="btn btn-danger">Actualizar</button>
+                </div>
+            </form>
+        </div>
+
+        <div style="text-align: center; padding-top: 120px; font-weight: bold;">
+            <!-- Rellenar dinamicamente con mensaje de error -->
+            <p><%= mensajeError %> </p>
+        </div>
+    </div>
+
+<%- include ('partials/footer.ejs') -%> 
