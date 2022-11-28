@@ -25,20 +25,20 @@
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <% if (campoEditarP === "nombre") { %>
                             <label class="form-label fw-bold" for="nuevoValor">Nombre</label>
-                            <input id="nombre" name="nuevoValor" class="form-control" type="text"/>
+                            <input id="nombre" name="nuevoValor" class="form-control" type="text" required/>
 
                         <% } else if (campoEditarP === "descripcion") { %>
                             <label class="form-label fw-bold" for="nuevoValor">Descripción</label>
-                            <input id="descripcion" name="nuevoValor" class="form-control" />
+                            <input id="descripcion" name="nuevoValor" class="form-control" required />
 
                         <% } else if (campoEditarP === "precio") { %>
                             <label class="form-label fw-bold" for="nuevoValor">Precio</label>
-                            <input id="precio" name="nuevoValor" class="form-control" pattern="^[0-9]{1,4}\.{0,1}[0-9]{1,10}$"
+                            <input id="precio" name="nuevoValor" class="form-control" required pattern="^[0-9]{1,4}\.{0,1}[0-9]{1,10}$"
                             onsubmit="validate (this)" />
                             
                         <% } else { %>
                             <label class="form-label fw-bold" for="nuevoValor">Existencia</label>
-                            <input id="existencia" name="nuevoValor" class="form-control" pattern="^[0-9]{1,9}$"
+                            <input id="existencia" name="nuevoValor" class="form-control" required pattern="^[0-9]{1,9}$"
                             onsubmit="validate (this)"/>
                         <% } %>
                     </div>

@@ -22,17 +22,17 @@
                 <div class="row" style="text-align: center">
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="nombreCompleto">Nombre Completo</label>
-                        <input id="nombreCompleto" name="nombre" class="form-control" />
+                        <input id="nombreCompleto" name="nombre" class="form-control" required/>
                     </div>
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="Altura">Altura</label>
                         <input id="Altura" name="altura" class="form-control" pattern="^[0-3]\.[0-9]{2}$"
-                        onsubmit="validate (this)" />
+                        onsubmit="validate (this)" required/>
                     </div>
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="Peso">Peso</label>
                         <input id="Peso" name="peso" class="form-control" pattern="^[0-9]{1,4}\.{0,1}[0-9]{1,10}$"
-                        onsubmit="validate (this)" />
+                        onsubmit="validate (this)" required/>
                     </div>
                 </div>
 
@@ -41,7 +41,7 @@
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" name="fechaNacimientoLabel" for="fechaNacimiento">Fecha de
                             Nacimiento</label>
-                        <input id="fechaNacimiento" name="fechaNacimiento" class="form-control" type="date" />
+                        <input id="fechaNacimiento" name="fechaNacimiento" class="form-control" type="date" required/>
                     </div>
 
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
@@ -65,6 +65,7 @@
                             id="telefono"
                             name="telefono"
                             class="form-control"
+                            required
                             pattern="^\+{0,1}[0-9]{10,12}$"
                             onsubmit="validate (this)"
                         />

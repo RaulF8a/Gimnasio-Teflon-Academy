@@ -21,24 +21,24 @@
                 <div class="row" style="text-align: center">
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="nombre">Nombre</label>
-                        <input id="nombre" name="nombre" class="form-control"/>
+                        <input id="nombre" name="nombre" class="form-control" required />
                     </div>
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="descripcion">Descripcion</label>
-                        <input id="descripcion" name="descripcion" class="form-control" />
+                        <input id="descripcion" name="descripcion" class="form-control" required />
                     </div>
                 </div>
 
                 <div class="row" style="text-align: center">
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="precio">Precio</label>
-                        <input id="precio" class="form-control" name="precio" pattern="^[0-9]{0,9}\.{0,1}[0-9]{1,9}$"
-                        onsubmit="validate (this)"/>
+                        <input id="precio" class="form-control" name="precio" pattern="^[0-9]{1,9}\.{0,1}[0-9]{1,9}$"
+                        onsubmit="validate (this)" required />
                     </div>
                     <div class="form-outline form-white mb-4 col-sm registrarAtletaFormInput">
                         <label class="form-label fw-bold" for="existencia">Existencia</label>
                         <input id="existencia" name="existencia" class="form-control" pattern="^[0-9]{1,9}$"
-                        onsubmit="validate (this)" />
+                        onsubmit="validate (this)" required />
                     </div>
                 </div>
 

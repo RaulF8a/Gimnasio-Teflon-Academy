@@ -58,6 +58,10 @@ let nuevoPeso = 0;
 let nuevaEstatura = 0;
 let cuentaBuscada = {};
 
+// Para generar un administrador la primera ejecucion.
+// sesionIniciada = true;
+// usuarioSesionIniciada.puesto = "Administrativo";
+
 // Generar ID de usuario.
 function generarID () {
     const letras = ["A", "B", "C", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
@@ -447,7 +451,7 @@ app.get ("/registroAcceso", (req, res) => {
             console.error (err);
 
             res.render ("registroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
-            sesion: sesionIniciada, mensajeError: "Ocurrio un error. Vuelve a intentarlo."});
+            sesion: sesionIniciada, mensajeError: "El ID no existe."});
 
             return;
         }
@@ -549,7 +553,7 @@ app.get ("/registrarAtleta", (req, res) => {
 
     if (!fechaValida){
         res.render ("registroAtleta", {titulo: "Registrar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
-        sesion: sesionIniciada, mensajeError: "El gminasio no admite menores de 15 años."});
+        sesion: sesionIniciada, mensajeError: "La fecha de nacimiento no es válida."});
         
         return;
     }
@@ -661,6 +665,7 @@ app.get ("/eliminarAtleta", (req, res) => {
 
     conexion.query (`DELETE FROM cliente WHERE id_cliente="${id}"`, (err) => {
         if (err) {
+            console.error (err);
             res.render ("eliminarAtleta", {titulo: "Eliminar Atleta", usuario: usuarioSesionIniciada.nombre, login: false, 
             sesion: sesionIniciada, mensajeError: "Ocurrio un error. Vuelve a intentarlo."});
 
@@ -858,7 +863,7 @@ app.get ("/registrarEmpleado", (req, res) => {
 
     if (!fechaValida){
         res.render ("registroEmpleado", {titulo: "Registrar Empleado", usuario: usuarioSesionIniciada.nombre, login: false, 
-        sesion: sesionIniciada, mensajeError: "La fecha de nacimiento no es válida"});
+        sesion: sesionIniciada, mensajeError: "La fecha de nacimiento no es válida."});
         
         return;
     }
@@ -1065,7 +1070,7 @@ app.get ("/puntoVentaCarrito", (req, res) => {
 
         let producto = {id:results[0].id_producto, nombre:results[0].nombre, precio:results[0].precio.toString (), cantidad:"1",
         existencia:results[0].existencia};
-        carrito.push (producto);
+        carrito.push (capitalizar (producto));
 
         res.redirect ("/puntoVentaCarrito");
     });
@@ -1304,17 +1309,16 @@ app.get ("/puntoVentaEditarInventario", (req, res) => {
     const nuevoValor = req.body.nuevoValor;
 
     if (campoEditar === "precio") {
-        conexion.query (`UPDATE productos SET precio=${nuevoValor} WHERE id_producto=${idEditar};`)
+        conexion.query (`UPDATE productos SET precio=${nuevoValor} WHERE id_producto=${idEditar};`);
     }
     else if (campoEditar === "existencia") {
-        conexion.query (`UPDATE productos SET existencia=${nuevoValor} WHERE id_producto=${idEditar};`)
+        conexion.query (`UPDATE productos SET existencia=${nuevoValor} WHERE id_producto=${idEditar};`);
     }
     else if (campoEditar === "nombre") {
-        nuevoValor.toLowerCase ();
-        conexion.query (`UPDATE productos SET ${campoEditar}="${nuevoValor}" WHERE id_producto=${idEditar};`)
+        conexion.query (`UPDATE productos SET ${campoEditar}="${nuevoValor.toLowerCase ()}" WHERE id_producto=${idEditar};`);
     }
     else {
-        conexion.query (`UPDATE productos SET ${campoEditar}="${nuevoValor}" WHERE id_producto=${idEditar};`)
+        conexion.query (`UPDATE productos SET ${campoEditar}="${nuevoValor}" WHERE id_producto=${idEditar};`);
     }
 
     campoEditar = "";

@@ -21,7 +21,7 @@
 
             <div style="text-align: center; padding-top: 30px">
                 <form action="/pagoMembresia" method="post">
-                    <input type="text" name="montoPagado" pattern="[0-9]{1,5}" onsubmit="validate (this)" 
+                    <input type="text" name="montoPagado" pattern="[0-9]{1,5}" onsubmit="validate (this)" required 
                     placeholder="Digita la cantidad pagada"/>
                     <button type="submit" class="btn btn-dark">Calcular Cambio</button>
                     <input hidden name="total" value="<%= costoMembresia %>"/>

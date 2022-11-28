@@ -27,6 +27,9 @@
                         <input
                             id="cuenta"
                             name="cuenta"
+                            pattern="^[A-Z]{2}-[0-9]{4}$"
+                            onsubmit="validate(this)"
+                            required
                             class="form-control"
                         />
                     </div>
