@@ -424,16 +424,46 @@ app.post ("/guardarPagoMembresia", (req, res) => {
     let fecha = obtenerFecha ();
     const tipoMembresia = req.body.tipoMembresia;
 
-    conexion.query (`INSERT INTO pago_membresia SET ?`, {id_cliente:idPagar, fecha_pago:fecha, tipo_membresia:tipoMembresia}, 
-    (err) => {
+    conexion.query (`SELECT id_pago_membresia FROM pago_membresia WHERE id_cliente="${idPagar}";`,
+    (err, datos) => {
         if (err) throw err;
+
+        if (datos.length === 0) {
+            conexion.query (`INSERT INTO pago_membresia SET ?`, {id_cliente:idPagar, fecha_pago:fecha, tipo_membresia:tipoMembresia}, 
+            (err) => {
+                if (err) throw err;
+            });
+        
+            idPagar = "";
+            enviadoDesdePago = false;
+            enviadoDesdeRegistroAtleta = false;
+        
+            res.redirect ("/menuPrincipal");
+            
+            return;
+        }
+        
+        else { 
+            conexion.query (`DELETE FROM pago_membresia WHERE id_pago_membresia=${datos[0].id_pago_membresia};`, (err) => {
+                if (err) throw err;
+                conexion.query (`INSERT INTO pago_membresia SET ?`, {id_cliente:idPagar, fecha_pago:fecha, tipo_membresia:tipoMembresia}, 
+                (err) => {
+                    if (err) throw err;
+                });
+            
+                idPagar = "";
+                enviadoDesdePago = false;
+                enviadoDesdeRegistroAtleta = false;
+            
+                res.redirect ("/menuPrincipal");
+
+                return;
+            });
+        }
+
+
     });
 
-    idPagar = "";
-    enviadoDesdePago = false;
-    enviadoDesdeRegistroAtleta = false;
-
-    res.redirect ("/menuPrincipal");
 });
 
 // Ruta registroAcceso
