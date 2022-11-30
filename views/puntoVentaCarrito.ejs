@@ -21,7 +21,7 @@
                 <input type="checkbox" onchange="this.form.submit ()" name="checkbox" value="<%= element.nombre %>">
             </form>
             
-            <p class="carritoParrafo"><%= element.nombre %> - $<%= element.precio %></p>
+            <p class="carritoParrafo"><%= capitalizar (element.nombre) %> - $<%= element.precio %></p>
 
             <form action="/modificarCantidad" method="post">
                 <input type="hidden" name="producto" value="<%= element.nombre %>">

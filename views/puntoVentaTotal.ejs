@@ -16,7 +16,7 @@
 <div class="box">
     <% carritoCompras.forEach ((element) => { %> 
         <div class="item">
-            <p class="carritoParrafo"><%= element.nombre %> - $<%= element.precio %></p>
+            <p class="carritoParrafo"><%= capitalizar (element.nombre) %> - $<%= element.precio %></p>
             <input type="number" name="cantidad" class="cantidadInput" min="0" value="<%= element.cantidad %>" disabled
             style="text-align:center;">
         </div>

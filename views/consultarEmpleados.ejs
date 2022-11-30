@@ -1,0 +1,54 @@
+<%- include ('partials/header.ejs', {titulo: titulo, usuario: usuario, login: login, sesion: sesion}) -%>
+
+<div class="justify-content-center align-items-center h-100">
+    <h2 class="fw-bold mb-2 menuPrincipalTitulo" style="text-align: center">
+        Empleados Registrados
+    </h2>
+    <div class="row tablaResumen" style="text-align: center;">
+        <div class="col">
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">CURP</th>
+                        <th scope="col">RFC</th>
+                        <th scope="col">Sueldo</th>
+                        <th scope="col">Fecha de Nacimiento</th>
+                        <th scope="col">Escolaridad</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">Puesto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% resultados.forEach ((element) => { %>
+                        <tr class="table-secondary">
+                            <th scope="row"><%= element.id %> </th> 
+                            <td><%= element.nombre %> </td> 
+                            <td><%= element.curp %> </td> 
+                            <td><%= element.rfc %> </td> 
+                            <td><%= element.sueldo %> </td> 
+                            <td><%= element.fechaNacimiento %> </td> 
+                            <td><%= element.escolaridad %> </td> 
+                            <td><%= element.telefono %> </td> 
+                            <td><%= element.puesto %> </td> 
+                        </tr>
+                    <% }); %> 
+                    
+                </tbody>
+            </table>
+        </div>
+
+        
+    </div>   
+
+    <div class="row" style="text-align: center; padding-top: 50px;">
+        <div class="col">
+            <form action="/consultarEmpleados" method="post">
+                <button type="submit" class="btn btn-dark">Regresar al Menú</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include ('partials/footer.ejs') -%> 

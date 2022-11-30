@@ -446,22 +446,26 @@ app.get ("/registroAcceso", (req, res) => {
     let fechaIngreso = obtenerFecha ();
     let horaIngreso = obtenerHora ();
 
-    conexion.query (`INSERT INTO visitas SET ?`, {id_cliente:id, fecha:fechaIngreso, hora:horaIngreso}, (err) => {
-        if (err) {
-            console.error (err);
+    conexion.query (`SELECT id_cliente FROM cliente WHERE id_cliente="${id}";`, (err, datos) => {
+        if (err) throw err;
 
+        if (datos.length === 0) {
             res.render ("registroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
             sesion: sesionIniciada, mensajeError: "El ID no existe."});
 
-            return;
+            return; 
         }
-        else {
+
+        conexion.query (`INSERT INTO visitas SET ?`, {id_cliente:id, fecha:fechaIngreso, hora:horaIngreso}, (err) => {
+            if (err) throw err;
+
             res.render ("registroAcceso", {titulo: "Registro de Acceso", usuario: usuarioSesionIniciada.nombre, login: false, 
             sesion: sesionIniciada, mensajeError: "Visita registrada."});
 
             return;
-        }
+        });
     });
+
 });
 
 // Ruta verRegistroAcceso
@@ -1052,7 +1056,7 @@ app.get ("/puntoVentaCarrito", (req, res) => {
     };
     
     res.render ("puntoVentaCarrito", {titulo: "Carrito", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito});
+    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, capitalizar:capitalizar});
 })
 .post ("/puntoVentaCarrito", (req, res) => {
     // Arreglo de JSON con {nombre, precio}
@@ -1063,14 +1067,14 @@ app.get ("/puntoVentaCarrito", (req, res) => {
 
         if (results.length === 0){
             res.render ("puntoVentaCarrito", {titulo: "Carrito", usuario: usuarioSesionIniciada.nombre, login: false, 
-            sesion: sesionIniciada, mensajeError: "No se encontro el producto.", carritoCompras:carrito});
+            sesion: sesionIniciada, mensajeError: "No se encontro el producto.", carritoCompras:carrito, capitalizar:capitalizar});
 
             return;
         }
 
         let producto = {id:results[0].id_producto, nombre:results[0].nombre, precio:results[0].precio.toString (), cantidad:"1",
         existencia:results[0].existencia};
-        carrito.push (capitalizar (producto));
+        carrito.push (producto);
 
         res.redirect ("/puntoVentaCarrito");
     });
@@ -1117,7 +1121,8 @@ app.get ("/puntoVentaTotal", (req, res) => {
     total = total.toFixed (2);
 
     res.render ("puntoVentaTotal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:-0.0000001,numeroCuenta:""});
+    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:-0.0000001,
+    numeroCuenta:"", capitalizar:capitalizar});
 })
 .post ("/puntoVentaTotal", (req, res) => {
     const total = req.body.total;
@@ -1128,7 +1133,8 @@ app.get ("/puntoVentaTotal", (req, res) => {
     cambio = cambio.toFixed (2);
 
     res.render ("puntoVentaTotal", {titulo: "Resumen de Compras", usuario: usuarioSesionIniciada.nombre, login: false, 
-    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:cambio, numeroCuenta:numeroCuenta});
+    sesion: sesionIniciada, mensajeError: "", carritoCompras:carrito, totalCuenta:total, cambio:cambio, 
+    numeroCuenta:numeroCuenta, capitalizar:capitalizar});
 });
 
 app.post ("/guardarCuenta", (req, res) => {
@@ -1269,18 +1275,22 @@ app.get ("/puntoVentaEliminarInventario", (req, res) => {
 .post ("/puntoVentaEliminarInventario", (req, res) => {
     const nombreProducto = req.body.nombre.toLowerCase ();
 
-    conexion.query (`DELETE FROM productos WHERE nombre="${nombreProducto}"`, (err) => {
-        if (err){
-            console.error (err);
+    conexion.query (`SELECT id_producto FROM productos WHERE nombre="${nombreProducto}";`, (err, datos) => {
+        if (err) throw err;
 
+        if (datos.length === 0) {
             res.render ("puntoVentaEliminarInventario", {titulo: "Eliminar del Inventario", usuario: usuarioSesionIniciada.nombre, 
-            login: false, sesion: sesionIniciada, mensajeError: "Ocurrio un error. Intentalo de nuevo."});
-
+            login: false, sesion: sesionIniciada, mensajeError: "No se encontro el producto."});
+    
             return;
         }
-    });
 
-    res.redirect ("/puntoVentaMenu");
+        conexion.query (`DELETE FROM productos WHERE id_producto=${datos[0].id_producto}`, (err) => {
+            if (err) throw err;
+        });
+
+        res.redirect ("/puntoVentaMenu");
+    });
 });
 
 app.get ("/puntoVentaEditarInventario", (req, res) => {
@@ -1487,7 +1497,7 @@ app.get ("/reporteVentas", (req, res) => {
         res.redirect ("/menuPrincipal");
 
         return;
-    };
+    }
 
     conexion.query (`SELECT * FROM venta;`, (err, datos) => {
         if (err) throw err;
@@ -1565,6 +1575,54 @@ app.get ("/consultarDatos", (req, res) => {
 })
 .post ("/consultarDatos", (req, res) => {
     res.redirect ("/menuPrincipal");
+});
+
+app.get ("/consultarClientes", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    }
+
+    conexion.query (`SELECT * FROM cliente;`, (err, datos) => {
+        if (err) throw err;
+
+        res.render ("consultarClientes", {titulo:"Consultar Clientes", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", resultados:datos});
+    });
+})
+.post ("/consultarClientes", (req, res) => {
+    res.redirect ("/menuFinanzas");
+});
+
+app.get ("/consultarEmpleados", (req, res) => {
+    if (!sesionIniciada){
+        res.redirect ("/login");
+
+        return;
+    }
+
+    if (usuarioSesionIniciada.puesto !== "Administrativo") {
+        res.redirect ("/menuPrincipal");
+
+        return;
+    }
+
+    conexion.query (`SELECT * FROM personal;`, (err, datos) => {
+        if (err) throw err;
+
+        res.render ("consultarEmpleados", {titulo:"Consultar Clientes", usuario: usuarioSesionIniciada.nombre, login: false, 
+        sesion: sesionIniciada, mensajeError: "", resultados:datos});
+    });
+})
+.post ("/consultarEmpleados", (req, res) => {
+    res.redirect ("/menuFinanzas");
 });
 
 app.listen (process.env.PORT || 3000, () => {
