@@ -1,7 +1,10 @@
-# Proyecto Gimnasio
-<h2> Authors </h2>
-<h4> Francisco Javier Cortés Armas </h4> 
-<h4> Manuel Uriel Franco Ortiz </h4>
-<h4> Luis Fernando Mora Ornelas </h4>
-<h4> Raúl Francisco Ochoa Díaz </h4>
-<h4> Miriam Paola Rodriguez Martin </h4>
+# Sistema para el Gimnasio Teflon Academy
+
+Repositorio para almacenar la aplicación correspondiente al sistema del Gimnasio Teflon Academy, como parte del proyecto final de la materia de Ingenieria de Software I.
+
+## Autores
+* Raúl Francisco Ochoa Díaz
+* Francisco Javier Cortés Armas
+* Manuel Uriel Franco Ortiz
+* Luis Fernando Mora Ornelas
+* Miriam Paola Rodriguez Martin
